@@ -1,6 +1,6 @@
-# otree_single_asset_market
+# ri_cda
 
-This experiment is a single-asset CDA market implemented using [oTree Markets](https://github.com/Leeps-Lab/otree_markets). To install, follow the installation instructions for oTree Markets [here](https://github.com/Leeps-Lab/otree_markets/wiki/Installation). Then clone this repo into your oTree project folder and add the following session config dict to `SESSION_CONFIGS` in settings.py:
+This experiment is a CDA market implemented using [oTree Markets](https://github.com/Leeps-Lab/otree_markets). To install, follow the installation instructions for oTree Markets [here](https://github.com/Leeps-Lab/otree_markets/wiki/Installation). Then clone this repo into your oTree project folder and add the following session config dict to `SESSION_CONFIGS` in settings.py:
 
 ```python
  dict(

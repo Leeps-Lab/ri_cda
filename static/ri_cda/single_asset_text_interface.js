@@ -31,11 +31,11 @@ class SingleAssetTextInterface extends PolymerElement {
             askPrice: Number,
             buyOption: {
                 type: Boolean,
-                value: false,
+                value: true,
             },
             sellOption: {
                 type: Boolean,
-                value: false,
+                value: true,
             },
         };
     }

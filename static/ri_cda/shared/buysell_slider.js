@@ -26,7 +26,7 @@ class BuysellSlider extends PolymerElement {
             animatePrice: Boolean,
             disableSelect: {
                 type: Boolean,
-                value: true,
+                value: false,
             }
         }
     }
@@ -92,7 +92,7 @@ class BuysellSlider extends PolymerElement {
                     width: 100%;
                 }
             </style>
-            <div class="markers">
+            <!-- <div class="markers">
                 <price-marker
                 class="high"
                 value="[[ highValue ]]"
@@ -102,7 +102,7 @@ class BuysellSlider extends PolymerElement {
                 class="low"
                 value="[[ lowValue ]]"
                 style$="left: [[ _getMark(lowValue) ]]%;"
-            ></price-marker>
+            ></price-marker> -->
             <price-marker
                 id="price"
                 value="[[ priceToShow ]]"

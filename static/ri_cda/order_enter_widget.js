@@ -70,11 +70,10 @@ class OrderEnterWidget extends PolymerElement {
                     <buysell-slider
                         low-value="0"
                         high-value="100"
-                        buy-option
-                        sell-option
+                        buy-option="[[ buyOption ]]"
+                        sell-option="[[ sellOption ]]"
                         buy-price="{{ buyPrice }}"
                         sell-price="{{ sellPrice }}"
-                        hide-before-submit
                     ></buysell-slider>
 
                     <label for="price_input">Price</label>
@@ -82,8 +81,8 @@ class OrderEnterWidget extends PolymerElement {
                     <label for="volume_input">Volume</label>
                     <input id="volume_input" type="number" min="1">
                     <div>
-                        <button type="button" on-click="_enter_order" value="bid">Enter Bid</button>
-                        <button type="button" on-click="_enter_order" value="ask">Enter Ask</button>
+                        <button type="button" on-click="_enter_bid" value="bid">Enter Bid</button>
+                        <button type="button" on-click="_enter_ask" value="ask">Enter Ask</button>
                     </div>
                 </div>
             </div>
@@ -91,7 +90,7 @@ class OrderEnterWidget extends PolymerElement {
     }
 
     _enter_bid() {
-        const price = this.buyPrice
+        const price = this.buyPrice;
         const volume = 1;
         const is_bid = true;
         const order = {
