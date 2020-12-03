@@ -10,6 +10,10 @@ import '/static/otree_markets/event_log.js';
 
 import './order_enter_widget.js';
 
+import './public_info/public_info.js';
+import './info_precision/info_precision.js';
+import './bond_price/bond_price.js';
+
 /*
     this component is a single-asset market, implemented using otree_markets' trader_state component and some of
     otree_markets' reusable UI widgets.
@@ -22,11 +26,32 @@ class SingleAssetTextInterface extends PolymerElement {
             bids: Array,
             asks: Array,
             trades: Array,
-            settledAssets: Number,
+            // settledAssets: Number,
             availableAssets: Number,
-            settledCash: Number,
+            // settledCash: Number,
             availableCash: Number,
-
+            step: {
+                type: Number,
+                value: 0,
+                observer: function (step) {
+                    setTimeout(function () {
+                        if (step && step <= 4) {  // auto scroll down to next step/screen
+                            window.scrollBy({ top: 480, behavior: 'smooth' });
+                        }
+                    }, 500);
+                },
+                notify: true,
+                reflectToAttribute: true,
+            },
+            g: Number,
+            k: Number,
+            m: Number,
+            precision: Number,
+            cost: Number,
+            mLow: Number,
+            mHigh: Number,
+            lowValue: Number,
+            highValue: Number,
             bidPrice: Number,
             askPrice: Number,
             buyOption: {
@@ -36,6 +61,10 @@ class SingleAssetTextInterface extends PolymerElement {
             sellOption: {
                 type: Boolean,
                 value: true,
+            },
+            buttonLabel: {
+                type: String,
+                value: 'Next',
             },
         };
     }
@@ -70,82 +99,124 @@ class SingleAssetTextInterface extends PolymerElement {
                 #log-container > div {
                     flex: 0 1 90%;
                 }
+                .btn {
+                    position: relative;
+                    margin: 30px 25% auto 90%;
+                    width: 50px;
+                }
 
                 order-list, trade-list, event-log {
                     border: 1px solid black;
                 }
             </style>
-
-            <simple-modal
-                id="modal"
-            ></simple-modal>
-            <otree-constants
-                id="constants"
-            ></otree-constants>
-            <trader-state
-                id="trader_state"
-                bids="{{bids}}"
-                asks="{{asks}}"
-                trades="{{trades}}"
-                settled-assets="{{settledAssets}}"
-                available-assets="{{availableAssets}}"
-                settled-cash="{{settledCash}}"
-                available-cash="{{availableCash}}"
-                on-confirm-trade="_confirm_trade"
-                on-confirm-cancel="_confirm_cancel"
-                on-error="_handle_error"
-            ></trader-state>
-
-            <div class="container" id="main-container">
-                <div>
-                    <h3>Bids</h3>
-                    <order-list
-                        class="flex-fill"
-                        orders="[[bids]]"
-                        on-order-canceled="_order_canceled"
-                        on-order-accepted="_order_accepted"
-                    ></order-list>
-                </div>
-                <div>
-                    <h3>Trades</h3>
-                    <trade-list
-                        class="flex-fill"
-                        trades="[[trades]]"
-                    ></trade-list>
-                </div>
-                <div>
-                    <h3>Asks</h3>
-                    <order-list
-                        class="flex-fill"
-                        orders="[[asks]]"
-                        on-order-canceled="_order_canceled"
-                        on-order-accepted="_order_accepted"
-                    ></order-list>
-                </div>
-                <div>
-                    <event-log
-                        class="flex-fill"
-                        id="log"
-                        max-entries=100
-                    ></event-log>
-                </div>
+            <div class="first">
+                <public-info
+                    g="[[ g ]]"
+                    credits="[[ participation_fee ]]"
+                ></public-info>
             </div>
-            <!-- <div class="container" id="log-container">
-            </div> -->
-            <div>
-                <order-enter-widget
-                    class="flex-fill"
+            <div hidden$="{{ _hideStep(step, 1) }}">
+                <info-precision
+                    k="[[ k ]]"
+                    precision="{{ precision }}"
+                    cost="{{ cost }}"
+                    disable-select="{{ _disableStep(step, 1) }}"
+                ></info-precision>
+            </div>
+            <div class="step" hidden$="{{ _hideStep(step, 2) }}">
+                <bond-price
+                    g="[[ g ]]"
+                    m="[[ m ]]"
+                    q="[[ q ]]"
+                    buy-option="[[ buyOption ]]"
+                    sell-option="[[ sellOption ]]"
+                    precision="[[ precision ]]"
+                    default-prob="[[ g ]]"
+                    m-low="{{ mLow }}"
+                    m-high="{{ mHigh }}"
+                    low-value="{{ lowValue }}"
+                    high-value="{{ highValue }}"
+                    buy-price="{{ bidPrice }}"
+                    sell-price="{{ askPrice }}"
+                    expected-value="{{ expectedVal }}"
+                    disable-select="[[ _disableStep(step, 2) ]]"
+                ></bond-price>
+            </div>
+            <div hidden$="{{ _hideStep(step, 2) }}">
+                <simple-modal
+                    id="modal"
+                ></simple-modal>
+                <otree-constants
+                    id="constants"
+                ></otree-constants>
+                <trader-state
+                    id="trader_state"
+                    bids="{{bids}}"
+                    asks="{{asks}}"
+                    trades="{{trades}}"
                     settled-assets="{{settledAssets}}"
                     available-assets="{{availableAssets}}"
                     settled-cash="{{settledCash}}"
                     available-cash="{{availableCash}}"
-                    buy-price="[[ bidPrice ]]"
-                    sell-price="[[ askPrice ]]"
-                    buy-option="[[ buyOption ]]"
-                    sell-option="[[ sellOption ]]"
-                    on-order-entered="_order_entered"
-                ></order-enter-widget>
+                    on-confirm-trade="_confirm_trade"
+                    on-confirm-cancel="_confirm_cancel"
+                    on-error="_handle_error"
+                ></trader-state>
+
+                <div class="container" id="main-container">
+                    <div>
+                        <h3>Bids</h3>
+                        <order-list
+                            class="flex-fill"
+                            orders="[[bids]]"
+                            on-order-canceled="_order_canceled"
+                            on-order-accepted="_order_accepted"
+                        ></order-list>
+                    </div>
+                    <div>
+                        <h3>Trades</h3>
+                        <trade-list
+                            class="flex-fill"
+                            trades="[[trades]]"
+                        ></trade-list>
+                    </div>
+                    <div>
+                        <h3>Asks</h3>
+                        <order-list
+                            class="flex-fill"
+                            orders="[[asks]]"
+                            on-order-canceled="_order_canceled"
+                            on-order-accepted="_order_accepted"
+                        ></order-list>
+                    </div>
+                    <div>
+                        <event-log
+                            class="flex-fill"
+                            id="log"
+                            max-entries=100
+                        ></event-log>
+                    </div>
+                </div>
+                <!-- <div class="container" id="log-container">
+                </div> -->
+                <div>
+                    <order-enter-widget
+                        class="flex-fill"
+                        settled-assets="{{settledAssets}}"
+                        available-assets="{{availableAssets}}"
+                        settled-cash="{{settledCash}}"
+                        available-cash="{{availableCash}}"
+                        buy-price="[[ bidPrice ]]"
+                        sell-price="[[ askPrice ]]"
+                        low-value="[[ lowValue ]]"
+                        high-value="[[ highValue ]]"
+                        buy-option="[[ buyOption ]]"
+                        sell-option="[[ sellOption ]]"
+                        on-order-entered="_order_entered"
+                    ></order-enter-widget>
+                </div>
             </div>
+            <paper-button class="btn" on-click="nextStep" hidden$="[[ _updateButtonLabel(step)]]">[[ buttonLabel ]]</paper-button>
         `;
     }
 
@@ -157,9 +228,24 @@ class SingleAssetTextInterface extends PolymerElement {
     // triggered when this player enters an order
     _order_entered(event) {
         const order = event.detail;
+        // console.log('order entered:', order);
         if (isNaN(order.price) || isNaN(order.volume)) {
             this.$.log.error('Invalid order entered');
             return;
+        }
+        // replace previous order if higher bid or lower ask
+        if (order.is_bid) {
+            if (this.bids.length && order.price > this.bids[0].price) {
+                const currentBid = this.bids[0];
+                this.$.trader_state.cancel_order(currentBid);
+                // console.log('cancelled bid', currentBid, this.bids);
+            }
+        } else {
+            if (this.asks.length && order.price < this.asks[0].price) {
+                const currentAsk = this.asks[0];
+                this.$.trader_state.cancel_order(currentAsk);
+                // console.log('cancelled ask', currentAsk, this.asks);
+            }
         }
         this.$.trader_state.enter_order(order.price, order.volume, order.is_bid);
     }
@@ -217,6 +303,52 @@ class SingleAssetTextInterface extends PolymerElement {
         let message = event.detail;
         this.$.log.error(message)
     }
+
+    nextStep() {
+        this.step++;
+        this.dispatchEvent(new CustomEvent('getPolymerData', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                this: this,
+                value: { // values to dispatch to oTree
+                    'step': this.step,
+                    'precision': this.precision,
+                    'cost': this.cost,
+                    // 'bidPrice': this.bidPrice,
+                    // 'askPrice': this.askPrice,
+                    'mLow': this.mLow,
+                    'mHigh': this.mHigh,
+                    'lowValue': this.lowValue,
+                    'highValue': this.highValue,
+                    // 'payoff': this.payoff,
+                },
+                eventName: 'getPolymerData'
+            }
+        }));
+        return this.step;
+    }
+
+    _hideStep(step, num) {
+        return step < num;
+    }
+
+    _disableStep(step, num) {
+        return step != num;
+        // return false; // allow changes to previous steps for debugging
+    }
+
+    _updateButtonLabel(step) {
+        if (this.isResultPage)
+            this.buttonLabel = 'Continue';
+        else if (step)
+            this.buttonLabel = 'Submit';
+        else
+            this.buttonLabel = 'Next';
+        // determines when bid/ask prices submitted to hide button
+        return step > 2;
+    }
+
 }
 
 window.customElements.define('single-asset-text-interface', SingleAssetTextInterface);

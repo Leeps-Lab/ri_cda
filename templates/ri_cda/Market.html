@@ -6,6 +6,7 @@
 {% endblock %}
 
 {% block scripts %}
+    <script src="{% static 'ri_cda/highcharts.js' %}"></script>
     <script type="module" src="/static/ri_cda/single_asset_text_interface.js"></script>
     <script type="module" src="/static/otree_markets/disable_interface_overlay.js"></script>
 {% endblock %}
@@ -15,6 +16,10 @@
     <disable-interface-overlay
     ></disable-interface-overlay>
 
-    <single-asset-text-interface></single-asset-text-interface>
+    <single-asset-text-interface
+        g="{{ g }}"
+        k="{{ k }}"
+        m="{{ m }}"
+    ></single-asset-text-interface>
 
 {% endblock %}

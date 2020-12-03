@@ -1,5 +1,6 @@
 import { html, PolymerElement } from '/static/otree-redwood/node_modules/@polymer/polymer/polymer-element.js';
 import './shared/buysell_slider.js';
+import './polymer-elements/paper-button.js';
 
 /*
     this component contains displays of the player's cash and asset allocations, and has inputs
@@ -48,9 +49,21 @@ class OrderEnterWidget extends PolymerElement {
                 }
                 #order-input {
                     text-align: center;
+                    width: 75%;
                 }
                 #allocation > div:first-child {
                     text-align: center;
+                }
+                .btn {
+                    height: 35px;
+                    margin: 10px;
+                }
+                .bid-btn {
+                    background-color: #2F3238;
+                }
+                .ask-btn {
+                    background-color: #007bff;
+                    height: 35px;
                 }
             </style>
 
@@ -59,30 +72,32 @@ class OrderEnterWidget extends PolymerElement {
                     <div>
                         <h4>Your Allocation</h4>
                     </div>
-                    <div>Available Cash: $[[availableCash]]</div>
+                    <div>Net Cash: $[[availableCash]]</div>
+                    <div>Bonds held: $[[availableAssets]]</div>
+                    <!-- <div>Available Cash: $[[availableCash]]</div>
                     <div>Settled Cash: $[[settledCash]]</div>
                     <div>Available Assets: [[availableAssets]]</div>
-                    <div>Settled Assets: [[settledAssets]]</div>
+                    <div>Settled Assets: [[settledAssets]]</div> -->
                 </div>
                 <div id="order-input">
                     <h4>Submit an Order</h4>
                     
                     <buysell-slider
-                        low-value="0"
-                        high-value="100"
+                        low-value="[[ lowValue ]]"
+                        high-value="[[ highValue ]]"
                         buy-option="[[ buyOption ]]"
                         sell-option="[[ sellOption ]]"
                         buy-price="{{ buyPrice }}"
                         sell-price="{{ sellPrice }}"
                     ></buysell-slider>
 
-                    <label for="price_input">Price</label>
+                    <!-- <label for="price_input">Price</label>
                     <input id="price_input" type="number" min="0">
                     <label for="volume_input">Volume</label>
-                    <input id="volume_input" type="number" min="1">
+                    <input id="volume_input" type="number" min="1"> -->
                     <div>
-                        <button type="button" on-click="_enter_bid" value="bid">Enter Bid</button>
-                        <button type="button" on-click="_enter_ask" value="ask">Enter Ask</button>
+                        <paper-button class="bid-btn btn" on-click="_enter_bid">Enter bid</paper-button>
+                        <paper-button class="ask-btn btn" on-click="_enter_ask">Enter ask</paper-button>
                     </div>
                 </div>
             </div>
