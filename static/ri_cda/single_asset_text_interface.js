@@ -3,16 +3,20 @@ import '/static/otree-redwood/src/redwood-channel/redwood-channel.js';
 import '/static/otree-redwood/src/otree-constants/otree-constants.js';
 
 import '/static/otree_markets/trader_state.js'
-import '/static/otree_markets/order_list.js';
-import '/static/otree_markets/trade_list.js';
+// import '/static/otree_markets/order_list.js';
+// import '/static/otree_markets/trade_list.js';
 import '/static/otree_markets/simple_modal.js';
-import '/static/otree_markets/event_log.js';
+// import '/static/otree_markets/event_log.js';
 
 import './order_enter_widget.js';
 
 import './public_info/public_info.js';
 import './info_precision/info_precision.js';
 import './bond_price/bond_price.js';
+
+import './otree_markets_components/event_log.js';
+import './otree_markets_components/order_list.js';
+import './otree_markets_components/trade_list.js';
 
 /*
     this component is a single-asset market, implemented using otree_markets' trader_state component and some of
@@ -35,7 +39,7 @@ class SingleAssetTextInterface extends PolymerElement {
                 value: 0,
                 observer: function (step) {
                     setTimeout(function () {
-                        if (step && step <= 4) {  // auto scroll down to next step/screen
+                        if (step && step < 3) {  // auto scroll down to next step/screen
                             window.scrollBy({ top: 480, behavior: 'smooth' });
                         }
                     }, 500);
@@ -66,6 +70,7 @@ class SingleAssetTextInterface extends PolymerElement {
                 type: String,
                 value: 'Next',
             },
+            pcode: String,
         };
     }
 
@@ -84,7 +89,6 @@ class SingleAssetTextInterface extends PolymerElement {
                     flex: 1 0 0;
                     min-height: 0;
                 }
-
                 #main-container {
                     height: 40vh;
                     margin-bottom: 10px;
@@ -104,7 +108,16 @@ class SingleAssetTextInterface extends PolymerElement {
                     margin: 30px 25% auto 90%;
                     width: 50px;
                 }
-
+                .bids {
+                    border: 2px solid #2F3238;
+                    flex: 1 0 0;
+                    min-height: 0;
+                }
+                .asks {
+                    border: 2px solid #007bff;
+                    flex: 1 0 0;
+                    min-height: 0;
+                }
                 order-list, trade-list, event-log {
                     border: 1px solid black;
                 }
@@ -142,7 +155,7 @@ class SingleAssetTextInterface extends PolymerElement {
                     disable-select="[[ _disableStep(step, 2) ]]"
                 ></bond-price>
             </div>
-            <div hidden$="{{ _hideStep(step, 2) }}">
+            <div hidden$="{{ _hideStep(step, 3) }}">
                 <simple-modal
                     id="modal"
                 ></simple-modal>
@@ -167,7 +180,7 @@ class SingleAssetTextInterface extends PolymerElement {
                     <div>
                         <h3>Bids</h3>
                         <order-list
-                            class="flex-fill"
+                            class="bids"
                             orders="[[bids]]"
                             on-order-canceled="_order_canceled"
                             on-order-accepted="_order_accepted"
@@ -177,13 +190,15 @@ class SingleAssetTextInterface extends PolymerElement {
                         <h3>Trades</h3>
                         <trade-list
                             class="flex-fill"
+                            id="trades"
                             trades="[[trades]]"
+                            pcode="[[pcode]]"
                         ></trade-list>
                     </div>
                     <div>
                         <h3>Asks</h3>
                         <order-list
-                            class="flex-fill"
+                            class="asks"
                             orders="[[asks]]"
                             on-order-canceled="_order_canceled"
                             on-order-accepted="_order_accepted"
@@ -228,26 +243,26 @@ class SingleAssetTextInterface extends PolymerElement {
     // triggered when this player enters an order
     _order_entered(event) {
         const order = event.detail;
-        // console.log('order entered:', order);
         if (isNaN(order.price) || isNaN(order.volume)) {
             this.$.log.error('Invalid order entered');
             return;
         }
-        // replace previous order if higher bid or lower ask
+        // replace previous order if higher bid or lower ask, ignores otherwise
         if (order.is_bid) {
-            if (this.bids.length && order.price > this.bids[0].price) {
-                const currentBid = this.bids[0];
-                this.$.trader_state.cancel_order(currentBid);
-                // console.log('cancelled bid', currentBid, this.bids);
-            }
+            const bids = this.bids.filter(b => b.pcode === this.pcode);
+            if (bids.length && order.price > bids[0].price) {
+                this.$.trader_state.cancel_order(bids[0]);
+                this.$.trader_state.enter_order(order.price, order.volume, order.is_bid);
+            } else if (bids.length === 0)
+                this.$.trader_state.enter_order(order.price, order.volume, order.is_bid);
         } else {
-            if (this.asks.length && order.price < this.asks[0].price) {
-                const currentAsk = this.asks[0];
-                this.$.trader_state.cancel_order(currentAsk);
-                // console.log('cancelled ask', currentAsk, this.asks);
-            }
+            const asks = this.asks.filter(a => a.pcode === this.pcode);
+            if (asks.length && order.price < asks[0].price) {
+                this.$.trader_state.cancel_order(asks[0]);
+                this.$.trader_state.enter_order(order.price, order.volume, order.is_bid);
+            } else if (asks.length === 0)
+                this.$.trader_state.enter_order(order.price, order.volume, order.is_bid);
         }
-        this.$.trader_state.enter_order(order.price, order.volume, order.is_bid);
     }
 
     // triggered when this player cancels an order
@@ -283,11 +298,23 @@ class SingleAssetTextInterface extends PolymerElement {
     // react to the backend confirming that a trade occurred
     _confirm_trade(event) {
         const trade = event.detail;
+        console.log('trade', trade);
         const all_orders = trade.making_orders.concat([trade.taking_order]);
         for (let order of all_orders) {
-            if (order.pcode == this.pcode)
-                this.$.log.info(`You ${order.is_bid ? 'bought' : 'sold'} ${order.traded_volume} ${order.traded_volume == 1 ? 'unit' : 'units'}`);
+            if (order.pcode == this.pcode) {
+                const type = order.is_bid ? 'bid' : 'ask';
+                // this.$.log.info(`You ${order.is_bid ? 'bought' : 'sold'} for $${order.price}`, type);
+                this.$.log.info(`${order.is_bid ? '-' : '+'} $${order.price}`, type);
+            }
+            // this.$.log.info(`You ${order.is_bid ? 'bought' : 'sold'} ${order.traded_volume} ${order.traded_volume == 1 ? 'unit' : 'units'}`);
         }
+        let type = 'other';
+        if (this.trades[0].taking_order.pcode === this.pcode)
+            type = 'ask';
+        else if (this.trades[0].making_orders[0].pcode === this.pcode)
+            type = 'bid';
+        this.$.trades.setColor(0, type);
+        console.log(this.trades); 
     }
 
     // react to the backend confirming that an order was canceled
@@ -339,7 +366,7 @@ class SingleAssetTextInterface extends PolymerElement {
     }
 
     _updateButtonLabel(step) {
-        if (this.isResultPage)
+        if (step === 2)
             this.buttonLabel = 'Continue';
         else if (step)
             this.buttonLabel = 'Submit';

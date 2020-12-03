@@ -17,15 +17,11 @@ class OrderEnterWidget extends PolymerElement {
             availableAssets: Number,
             buyPrice: {
                 type: Number,
-                notify: true,
                 value: 0,
-                reflectToAttribute: true,
             },
             sellPrice: {
                 type: Number,
-                notify: true,
                 value: 100,
-                reflectToAttribute: true,
             },
         };
     }
@@ -65,6 +61,21 @@ class OrderEnterWidget extends PolymerElement {
                     background-color: #007bff;
                     height: 35px;
                 }
+                .buy-sell-text {
+                text-align: left;
+                }
+                .val {
+                    font-weight: bold;
+                }
+                .buy {
+                    color: #2F3238;
+                }
+                .sell {
+                    color: #007bff;
+                }
+                img {
+                height: 2em;
+                }
             </style>
 
             <div id="container">
@@ -74,14 +85,29 @@ class OrderEnterWidget extends PolymerElement {
                     </div>
                     <div>Net Cash: $[[availableCash]]</div>
                     <div>Bonds held: $[[availableAssets]]</div>
-                    <!-- <div>Available Cash: $[[availableCash]]</div>
-                    <div>Settled Cash: $[[settledCash]]</div>
-                    <div>Available Assets: [[availableAssets]]</div>
-                    <div>Settled Assets: [[settledAssets]]</div> -->
                 </div>
                 <div id="order-input">
                     <h4>Submit an Order</h4>
+
                     
+        <h4 hidden$="[[ sellOption ]]">Select the price for which you'd like to <span class="buy val">buy</span> the bond by sliding
+        <img src="../../../../../static/ri_call_market/shared/buy_marker.png" alt="buy marker failed to load :(">
+        <span class="buy val">(bid)</span>.</h4>
+
+        <h4 hidden$="[[ buyOption ]]">Select the price for which you'd like to <span class="sell val">sell</span> the bond by sliding
+        <img src="../../../../../static/ri_call_market/shared/sell_marker.png" alt="buy marker failed to load :(">
+        <span class="sell val">(ask)</span>.</h4>
+
+        <p class="buy-sell-text" hidden$="[[ _hideOption(buyOption, sellOption) ]]">
+            Select the price for which you'd like to <span class="buy val">buy</span> the bond by sliding
+        <img src="../../../../../static/ri_call_market/shared/buy_marker.png" alt="buy marker failed to load :(">
+        <span class="buy val">(bid)</span>, and the price for which you'd like to <span class="sell val">sell</span>
+        the bond by sliding
+        <img src="../../../../../static/ri_call_market/shared/sell_marker.png" alt="buy marker failed to load :(">
+        <span class="sell val">(ask)</span>.</p>
+        <p class="buy-sell-text">Click <span class="buy val">Enter bid</span> and <span class="sell val">Enter ask</span>
+        to submit the corresponding value.</p>
+
                     <buysell-slider
                         low-value="[[ lowValue ]]"
                         high-value="[[ highValue ]]"
@@ -91,10 +117,6 @@ class OrderEnterWidget extends PolymerElement {
                         sell-price="{{ sellPrice }}"
                     ></buysell-slider>
 
-                    <!-- <label for="price_input">Price</label>
-                    <input id="price_input" type="number" min="0">
-                    <label for="volume_input">Volume</label>
-                    <input id="volume_input" type="number" min="1"> -->
                     <div>
                         <paper-button class="bid-btn btn" on-click="_enter_bid">Enter bid</paper-button>
                         <paper-button class="ask-btn btn" on-click="_enter_ask">Enter ask</paper-button>
@@ -104,40 +126,45 @@ class OrderEnterWidget extends PolymerElement {
         `;
     }
 
+
     _enter_bid() {
-        const price = this.buyPrice;
-        const volume = 1;
-        const is_bid = true;
+        const price = parseInt(this.buyPrice); // must be whole numbers, breaks with decimals
         const order = {
             price: price,
-            volume: volume,
-            is_bid: is_bid,
+            volume: 1,
+            is_bid: true,
         }
-        this.dispatchEvent(new CustomEvent('order-entered', {detail: order}));
+        this.dispatchEvent(new CustomEvent('order-entered', { detail: order }));
     }
 
     _enter_ask() {
         const price = this.sellPrice;
-        const volume = 1;
-        const is_bid = false;
         const order = {
             price: price,
-            volume: volume,
-            is_bid: is_bid,
+            volume: 1,
+            is_bid: false,
         }
-        this.dispatchEvent(new CustomEvent('order-entered', {detail: order}));
+        this.dispatchEvent(new CustomEvent('order-entered', { detail: order }));
     }
 
-    _enter_order(event) {
-        const price = parseInt(this.$.price_input.value);
-        const volume = parseInt(this.$.volume_input.value);
-        const is_bid = (event.target.value == "bid");
-        const order = {
-            price: price,
-            volume: volume,
-            is_bid: is_bid,
-        }
-        this.dispatchEvent(new CustomEvent('order-entered', {detail: order}));
+    // _enter_order(event) {
+    //     const price = parseInt(this.$.price_input.value);
+    //     const volume = parseInt(this.$.volume_input.value);
+    //     const is_bid = (event.target.value == "bid");
+    //     const order = {
+    //         price: price,
+    //         volume: volume,
+    //         is_bid: is_bid,
+    //     }
+    //     this.dispatchEvent(new CustomEvent('order-entered', {detail: order}));
+    // }
+
+    _hideOption(buyOption, sellOption) {
+        // buy = 0, sell = 1
+        if (buyOption && sellOption)
+            return false;
+        else
+            return true;
     }
 
 }

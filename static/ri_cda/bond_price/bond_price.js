@@ -105,7 +105,7 @@ class BondPrice extends PolymerElement {
         <div class="values">
 
         <h3>Your private information about m: [[ mLow ]] <span>&#8804;</span> m <span>&#8804;</span> [[ mHigh ]]</h3>
-
+<!-- 
         <h4 hidden$="[[ sellOption ]]">Select the price for which you'd like to <span class="buy val">buy</span> the bond by sliding
         <img src="../../../../../static/ri_call_market/shared/buy_marker.png" alt="buy marker failed to load :(">
         <span class="buy val">(bid)</span>.</h4>
@@ -120,7 +120,7 @@ class BondPrice extends PolymerElement {
         <span class="buy val">(bid)</span>, and the price for which you'd like to <span class="sell val">sell</span>
         the bond by sliding
         <img src="../../../../../static/ri_call_market/shared/sell_marker.png" alt="buy marker failed to load :(">
-        <span class="sell val">(ask)</span>.</p>
+        <span class="sell val">(ask)</span>.</p> -->
 
         <p>Lowest expected bond value: <span class="non-def">[[ _getNondefault(defaultProb) ]]%</span> * 100 + <span class="def">[[ defaultProb ]]%</span>
         * [[ mLow ]] = <span class="low val">[[ lowValue ]]</span></p>
@@ -151,13 +151,13 @@ class BondPrice extends PolymerElement {
         `;
     }
 
-    _hideOption(buyOption, sellOption) {
-        // buy = 0, sell = 1
-        if (buyOption && sellOption)
-            return false;
-        else
-            return true;
-    }
+    // _hideOption(buyOption, sellOption) {
+    //     // buy = 0, sell = 1
+    //     if (buyOption && sellOption)
+    //         return false;
+    //     else
+    //         return true;
+    // }
 
     _getNondefault(def) {
         return 100 - def;
