@@ -15,10 +15,11 @@ class OrderList extends PolymerElement {
         return {
             orders: Array,
             assetName: String,
+            type: String,
             displayFormat: {
                 type: Object,
                 value: function() {
-                    return order => `$${order.price}`;
+                    return order => `@ $${parseFloat((order.price/100).toFixed(2))}`;
                 },
             },
         };
@@ -54,6 +55,14 @@ class OrderList extends PolymerElement {
                 .other-order .cancel-button {
                     display: none;
                 }
+                .bid {
+                    color: #ffffff;
+                    background-color: #2F3238;
+                }
+                .ask {
+                    background-color: #007bff;
+                    color: #ffffff;
+                }
             </style>
 
             <otree-constants
@@ -62,7 +71,7 @@ class OrderList extends PolymerElement {
 
             <div id="container">
                 <template is="dom-repeat" items="{{orders}}" filter="{{_getAssetFilterFunc(assetName)}}">
-                    <div on-dblclick="_acceptOrder" class$="[[_getOrderClass(item)]]">
+                    <div class$="[[type]] [[_getOrderClass(item)]]" on-dblclick="_acceptOrder">
                         <span>[[displayFormat(item)]]</span>
                         <span class="cancel-button" on-click="_cancelOrder">&#9746;</span>
                     </div>
@@ -74,6 +83,8 @@ class OrderList extends PolymerElement {
     ready() {
         super.ready();
         this.pcode = this.$.constants.participantCode;
+
+        console.log('order list items', this.orders);
     }
 
     _getAssetFilterFunc(assetName) {
@@ -86,6 +97,7 @@ class OrderList extends PolymerElement {
     }
 
     _getOrderClass(order) {
+        console.log(order, order.pcode, this.pcode);
         if (order.pcode == this.pcode)
             return 'my-order';
         else

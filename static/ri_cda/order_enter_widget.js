@@ -23,6 +23,12 @@ class OrderEnterWidget extends PolymerElement {
                 type: Number,
                 value: 100,
             },
+            displayFormat: {
+                type: Object,
+                value: function() {
+                    return cash => `$${parseFloat((cash/100).toFixed(2))}`;
+                },
+            },
         };
     }
 
@@ -59,7 +65,6 @@ class OrderEnterWidget extends PolymerElement {
                 }
                 .ask-btn {
                     background-color: #007bff;
-                    height: 35px;
                 }
                 .buy-sell-text {
                 text-align: left;
@@ -83,8 +88,8 @@ class OrderEnterWidget extends PolymerElement {
                     <div>
                         <h4>Your Allocation</h4>
                     </div>
-                    <div>Net Cash: $[[availableCash]]</div>
-                    <div>Bonds held: $[[availableAssets]]</div>
+                    <div>Net Cash: [[displayFormat(availableCash)]]</div>
+                    <div>Bonds held: [[availableAssets]]</div>
                 </div>
                 <div id="order-input">
                     <h4>Submit an Order</h4>
@@ -128,9 +133,9 @@ class OrderEnterWidget extends PolymerElement {
 
 
     _enter_bid() {
-        const price = parseInt(this.buyPrice); // must be whole numbers, breaks with decimals
+        const price = this.buyPrice; // must be whole numbers, breaks with decimals
         const order = {
-            price: price,
+            price: parseInt(price * 100),
             volume: 1,
             is_bid: true,
         }
@@ -140,24 +145,12 @@ class OrderEnterWidget extends PolymerElement {
     _enter_ask() {
         const price = this.sellPrice;
         const order = {
-            price: price,
+            price: parseInt(price * 100),
             volume: 1,
             is_bid: false,
         }
         this.dispatchEvent(new CustomEvent('order-entered', { detail: order }));
     }
-
-    // _enter_order(event) {
-    //     const price = parseInt(this.$.price_input.value);
-    //     const volume = parseInt(this.$.volume_input.value);
-    //     const is_bid = (event.target.value == "bid");
-    //     const order = {
-    //         price: price,
-    //         volume: volume,
-    //         is_bid: is_bid,
-    //     }
-    //     this.dispatchEvent(new CustomEvent('order-entered', {detail: order}));
-    // }
 
     _hideOption(buyOption, sellOption) {
         // buy = 0, sell = 1

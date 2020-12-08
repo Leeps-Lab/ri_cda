@@ -18,11 +18,6 @@ import './otree_markets_components/event_log.js';
 import './otree_markets_components/order_list.js';
 import './otree_markets_components/trade_list.js';
 
-/*
-    this component is a single-asset market, implemented using otree_markets' trader_state component and some of
-    otree_markets' reusable UI widgets.
-*/
-
 class SingleAssetTextInterface extends PolymerElement {
 
     static get properties() {
@@ -36,10 +31,10 @@ class SingleAssetTextInterface extends PolymerElement {
             availableCash: Number,
             step: {
                 type: Number,
-                value: 0,
-                observer: function (step) {
+                value: 4, // set for dev, should default to 0
+                observer: function (step, isResultPage) {
                     setTimeout(function () {
-                        if (step && step < 3) {  // auto scroll down to next step/screen
+                        if (step && step < 3 && !isResultPage) {  // auto scroll down to next step/screen
                             window.scrollBy({ top: 480, behavior: 'smooth' });
                         }
                     }, 500);
@@ -70,7 +65,8 @@ class SingleAssetTextInterface extends PolymerElement {
                 type: String,
                 value: 'Next',
             },
-            pcode: String,
+            timeRemaining: Number,
+            isResultsPage: Boolean,
         };
     }
 
@@ -118,69 +114,78 @@ class SingleAssetTextInterface extends PolymerElement {
                     flex: 1 0 0;
                     min-height: 0;
                 }
+                .top-corner {
+                    position: fixed;
+                    top: 0;
+                    right: 5%;
+                }
                 order-list, trade-list, event-log {
                     border: 1px solid black;
                 }
             </style>
-            <div class="first">
-                <public-info
-                    g="[[ g ]]"
-                    credits="[[ participation_fee ]]"
-                ></public-info>
-            </div>
-            <div hidden$="{{ _hideStep(step, 1) }}">
-                <info-precision
-                    k="[[ k ]]"
-                    precision="{{ precision }}"
-                    cost="{{ cost }}"
-                    disable-select="{{ _disableStep(step, 1) }}"
-                ></info-precision>
-            </div>
-            <div class="step" hidden$="{{ _hideStep(step, 2) }}">
-                <bond-price
-                    g="[[ g ]]"
-                    m="[[ m ]]"
-                    q="[[ q ]]"
-                    buy-option="[[ buyOption ]]"
-                    sell-option="[[ sellOption ]]"
-                    precision="[[ precision ]]"
-                    default-prob="[[ g ]]"
-                    m-low="{{ mLow }}"
-                    m-high="{{ mHigh }}"
-                    low-value="{{ lowValue }}"
-                    high-value="{{ highValue }}"
-                    buy-price="{{ bidPrice }}"
-                    sell-price="{{ askPrice }}"
-                    expected-value="{{ expectedVal }}"
-                    disable-select="[[ _disableStep(step, 2) ]]"
-                ></bond-price>
-            </div>
-            <div hidden$="{{ _hideStep(step, 3) }}">
-                <simple-modal
-                    id="modal"
-                ></simple-modal>
-                <otree-constants
-                    id="constants"
-                ></otree-constants>
-                <trader-state
-                    id="trader_state"
-                    bids="{{bids}}"
-                    asks="{{asks}}"
-                    trades="{{trades}}"
-                    settled-assets="{{settledAssets}}"
-                    available-assets="{{availableAssets}}"
-                    settled-cash="{{settledCash}}"
-                    available-cash="{{availableCash}}"
-                    on-confirm-trade="_confirm_trade"
-                    on-confirm-cancel="_confirm_cancel"
-                    on-error="_handle_error"
-                ></trader-state>
+            <div hidden$="{{ isResultPage }}">
+                <h3 class="top-corner">Time remaining: [[ _timeFormat(timeRemaining) ]]</h3>
+                <div class="first">
+                    <public-info
+                        g="[[ g ]]"
+                        credits="[[ participation_fee ]]"
+                    ></public-info>
+                </div>
+                <div hidden$="{{ _hideStep(step, 1) }}">
+                    <info-precision
+                        k="[[ k ]]"
+                        precision="{{ precision }}"
+                        cost="{{ cost }}"
+                        disable-select="{{ _disableStep(step, 1) }}"
+                    ></info-precision>
+                </div>
+                <div class="step" hidden$="{{ _hideStep(step, 2) }}">
+                    <bond-price
+                        g="[[ g ]]"
+                        m="[[ m ]]"
+                        q="[[ q ]]"
+                        buy-option="[[ buyOption ]]"
+                        sell-option="[[ sellOption ]]"
+                        precision="[[ precision ]]"
+                        default-prob="[[ g ]]"
+                        m-low="{{ mLow }}"
+                        m-high="{{ mHigh }}"
+                        low-value="{{ lowValue }}"
+                        high-value="{{ highValue }}"
+                        buy-price="{{ bidPrice }}"
+                        sell-price="{{ askPrice }}"
+                        expected-value="{{ expectedVal }}"
+                        disable-select="[[ _disableStep(step, 2) ]]"
+                    ></bond-price>
+                </div>
+                <div hidden$="{{ _hideStep(step, 3) }}">
+                    <simple-modal
+                        id="modal"
+                    ></simple-modal>
+                    <otree-constants
+                        id="constants"
+                    ></otree-constants>
+                    <trader-state
+                        id="trader_state"
+                        bids="{{bids}}"
+                        asks="{{asks}}"
+                        trades="{{trades}}"
+                        settled-assets="{{settledAssets}}"
+                        available-assets="{{availableAssets}}"
+                        settled-cash="{{settledCash}}"
+                        available-cash="{{availableCash}}"
+                        time-remaining="{{timeRemaining}}"
+                        on-confirm-trade="_confirm_trade"
+                        on-confirm-cancel="_confirm_cancel"
+                        on-error="_handle_error"
+                    ></trader-state>
 
                 <div class="container" id="main-container">
                     <div>
                         <h3>Bids</h3>
                         <order-list
                             class="bids"
+                            type="bid"
                             orders="[[bids]]"
                             on-order-canceled="_order_canceled"
                             on-order-accepted="_order_accepted"
@@ -199,12 +204,14 @@ class SingleAssetTextInterface extends PolymerElement {
                         <h3>Asks</h3>
                         <order-list
                             class="asks"
+                            type="ask"
                             orders="[[asks]]"
                             on-order-canceled="_order_canceled"
                             on-order-accepted="_order_accepted"
                         ></order-list>
                     </div>
                     <div>
+                        <h3>Cash Flow</h3>
                         <event-log
                             class="flex-fill"
                             id="log"
@@ -232,17 +239,33 @@ class SingleAssetTextInterface extends PolymerElement {
                 </div>
             </div>
             <paper-button class="btn" on-click="nextStep" hidden$="[[ _updateButtonLabel(step)]]">[[ buttonLabel ]]</paper-button>
-        `;
+        </div>
+        <div hidden$="{{ _hidePage() }}">
+            <div>Net Cash: $[[availableCash]]</div>
+            <div>Bonds held: $[[availableAssets]]</div>
+        </div>
+       `;
     }
 
     ready() {
         super.ready();
         this.pcode = this.$.constants.participantCode;
+        // (re)assign colors for trade list (on page refresh)
+        for (let i = 0; i < this.trades.length; i++) {
+            let trade = this.trades[i];
+            let type = 'other';
+            if (trade.taking_order.pcode === this.pcode)
+                type = trade.taking_order.is_bid ? 'bid' : 'ask';
+            else if (trade.making_orders[0].pcode === this.pcode)
+                type = trade.making_orders[0].is_bid ? 'bid' : 'ask';
+            this.$.trades.setColor(i, type);
+        }
     }
 
     // triggered when this player enters an order
     _order_entered(event) {
         const order = event.detail;
+        console.log('order', order);
         if (isNaN(order.price) || isNaN(order.volume)) {
             this.$.log.error('Invalid order entered');
             return;
@@ -250,19 +273,16 @@ class SingleAssetTextInterface extends PolymerElement {
         // replace previous order if higher bid or lower ask, ignores otherwise
         if (order.is_bid) {
             const bids = this.bids.filter(b => b.pcode === this.pcode);
-            if (bids.length && order.price > bids[0].price) {
+            if (bids.length > 0)
                 this.$.trader_state.cancel_order(bids[0]);
-                this.$.trader_state.enter_order(order.price, order.volume, order.is_bid);
-            } else if (bids.length === 0)
-                this.$.trader_state.enter_order(order.price, order.volume, order.is_bid);
+            this.$.trader_state.enter_order(order.price, order.volume, order.is_bid);
         } else {
             const asks = this.asks.filter(a => a.pcode === this.pcode);
-            if (asks.length && order.price < asks[0].price) {
+            if (asks.length > 0)
                 this.$.trader_state.cancel_order(asks[0]);
-                this.$.trader_state.enter_order(order.price, order.volume, order.is_bid);
-            } else if (asks.length === 0)
-                this.$.trader_state.enter_order(order.price, order.volume, order.is_bid);
+            this.$.trader_state.enter_order(order.price, order.volume, order.is_bid);
         }
+        console.log('bids', this.bids, 'asks', this.asks, 'trades', this.trades);
     }
 
     // triggered when this player cancels an order
@@ -285,7 +305,7 @@ class SingleAssetTextInterface extends PolymerElement {
         if (order.pcode == this.pcode)
             return;
 
-        this.$.modal.modal_text = `Do you want to ${order.is_bid ? 'buy' : 'sell'} for $${order.price}?`
+        this.$.modal.modal_text = `Do you want to ${order.is_bid ? 'buy' : 'sell'} for $${parseFloat((order.price/100).toFixed(2))}?`
         this.$.modal.on_close_callback = (accepted) => {
             if (!accepted)
                 return;
@@ -299,22 +319,23 @@ class SingleAssetTextInterface extends PolymerElement {
     _confirm_trade(event) {
         const trade = event.detail;
         console.log('trade', trade);
+        trade.taking_order.price = trade.making_orders[0].price; // show trade price for both
         const all_orders = trade.making_orders.concat([trade.taking_order]);
         for (let order of all_orders) {
-            if (order.pcode == this.pcode) {
-                const type = order.is_bid ? 'bid' : 'ask';
-                // this.$.log.info(`You ${order.is_bid ? 'bought' : 'sold'} for $${order.price}`, type);
-                this.$.log.info(`${order.is_bid ? '-' : '+'} $${order.price}`, type);
+        if (order.pcode == this.pcode) {
+            const type = order.is_bid ? 'bid' : 'ask';
+            // this.$.log.info(`You ${order.is_bid ? 'bought' : 'sold'} for $${order.price}`, type);
+            this.$.log.info(`${order.is_bid ? '-' : '+'} $${parseFloat((order.price/100).toFixed(2))}`, type);
             }
             // this.$.log.info(`You ${order.is_bid ? 'bought' : 'sold'} ${order.traded_volume} ${order.traded_volume == 1 ? 'unit' : 'units'}`);
         }
+        // assign color code for trade list
         let type = 'other';
         if (this.trades[0].taking_order.pcode === this.pcode)
-            type = 'ask';
+            type = this.trades[0].taking_order.is_bid ? 'bid' : 'ask';
         else if (this.trades[0].making_orders[0].pcode === this.pcode)
-            type = 'bid';
+            type = this.trades[0].making_orders[0].is_bid ? 'bid' : 'ask';
         this.$.trades.setColor(0, type);
-        console.log(this.trades); 
     }
 
     // react to the backend confirming that an order was canceled
@@ -329,6 +350,14 @@ class SingleAssetTextInterface extends PolymerElement {
     _handle_error(event) {
         let message = event.detail;
         this.$.log.error(message)
+    }
+
+    _timeFormat(time) {
+        if (time === 0)
+            this.isResultPage = true;
+        const minutes = parseInt(time / 60);
+        const seconds = parseInt(time % 60);
+        return seconds >= 10 ? minutes + ":" + seconds : minutes + ":0" + seconds;
     }
 
     nextStep() {
@@ -376,6 +405,12 @@ class SingleAssetTextInterface extends PolymerElement {
         return step > 2;
     }
 
+    _hidePage() {
+        if (this.isResultPage === undefined)
+            return true;
+        else
+            return !this.isResultPage;
+    }
 }
 
 window.customElements.define('single-asset-text-interface', SingleAssetTextInterface);

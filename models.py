@@ -33,6 +33,7 @@ class Subsession(markets_models.Subsession):
     default = models.BooleanField()
     buy_option = models.BooleanField()
     sell_option = models.BooleanField()
+    period_length = models.IntegerField()
 
     @property
     def config(self):
@@ -45,9 +46,11 @@ class Subsession(markets_models.Subsession):
     def creating_session(self):
         if self.round_number > self.config.num_rounds:
             return
+        self.period_length = self.config.period_length
+        print('creating session', self.period_length)
+        self.save()
         return super().creating_session()
         config = self.config
-
     
     def get_g(self):
         # if self.g is None:
@@ -66,8 +69,9 @@ class Subsession(markets_models.Subsession):
     #         self.m = self.config.get('m')
     #         self.save()
         # if self.config.get('m') is None:
-        self.m = int(random.uniform(0, 100))
-        self.save()
+        if not self.m:
+            self.m = int(random.uniform(0, 100))
+            self.save()
         return self.m
         # return self.config.m
     # def get_y(self):
@@ -93,10 +97,16 @@ class Subsession(markets_models.Subsession):
     #         self.default = self.y < self.g
     #         self.save()
     #     return self.default
-
 class Group(markets_models.Group):
-    pass
 
+    def period_length(self):
+        print('getting period length', self.subsession.period_length, self.subsession.config.period_length)
+        return self.subsession.period_length
+        # pass
+
+    def get_data(self):
+        self.subsession.period_length = None 
+        self.subsession.save()
 
 class Player(markets_models.Player):
     width = models.IntegerField(initial=100)
@@ -110,4 +120,4 @@ class Player(markets_models.Player):
         return self.subsession.config.asset_endowment
     
     def cash_endowment(self):
-        return self.subsession.config.cash_endowment
+        return self.subsession.config.cash_endowment * 100

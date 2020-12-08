@@ -15,8 +15,7 @@ class TradeList extends PolymerElement {
             displayFormat: {
                 type: Object,
                 value: function() {
-                    return trade => `@ $${trade.taking_order.price}`;
-
+                    return trade => `@ $${parseFloat((trade.making_orders[0].price/100).toFixed(2))}`;
                 },
             },
             displayColor: {
@@ -49,7 +48,6 @@ class TradeList extends PolymerElement {
                 .ask {
                     background-color: #007bff;
                     color: #ffffff;
-
                 }
                 .other {
                     background-color: #a9a9a9;

@@ -1,0 +1,30 @@
+{% extends "otree_markets/Page.html" %}
+{% load otree static %}
+
+{% block title %}
+    Results
+{% endblock %}
+
+{% block scripts %}
+    <script type="module" src="/static/ri_cda/results.js"></script>
+{% endblock %}
+
+{% block content %}
+    <results-page
+        g="{{ g }}"
+        k="{{ k }}"
+        m="{{ m }}"
+        available-cash="{{player.available_cash}}"  
+        available-assets="{{player.available_assets}}"
+    ></results-page>
+
+{% endblock %}
+
+{% block styles %}
+<style>
+    .content {
+        display: flex;
+        justify-content: center;
+    }
+</style>
+{% endblock %}
