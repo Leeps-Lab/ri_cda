@@ -29,6 +29,8 @@ class block_page(Page):
 class Market(BaseMarketPage):
     # def get_timeout_seconds(self):
     #     return self.group.get_remaining_time()
+    def before_next_page(self):
+        self.player.save()
 
     def is_displayed(self):
         return self.round_number <= self.subsession.config.num_rounds
@@ -45,12 +47,12 @@ class Market(BaseMarketPage):
             # 'default': self.subsession.get_default(),
         }
 
-    def before_next_page(self):
-        self.subsession.period_length = 99999
-        self.subsession.save()
+    # def before_next_page(self):
+    #     self.subsession.period_length = 99999
+    #     self.subsession.save()
 # class Wait(WaitPage):
-    # wait_for_all_groups = True
-class Results(BaseMarketPage):
+#     wait_for_all_groups = True
+class Results(Page):
 
     def is_displayed(self):
         return self.round_number <= self.subsession.config.num_rounds
@@ -67,6 +69,7 @@ class Results(BaseMarketPage):
             # 'default': self.subsession.get_default(),
         }
 class EndBlock(Page):
+
     def is_displayed(self):
         try:
             if self.subsession.get_block_total() == 1:
@@ -75,6 +78,7 @@ class EndBlock(Page):
                 return self.subsession.get_round() % self.subsession.get_block_total() == 0
         except:
             return False
+
     def vars_for_template(self):
         if self.subsession.get_block_total() == 1:
             block_num = int(self.subsession.get_round()/self.subsession.get_block_total())
@@ -85,24 +89,31 @@ class EndBlock(Page):
             'round_payoff': self.player.round_payoff,
         }
 class payment_page(Page):
+
     def is_displayed(self):
         try:
             return self.subsession.get_round() == 2
         except:
             return False
+
     def vars_for_template(self):
         payment_payoff = 0
+
         ##sum of total round payoffs
         participation_fee_total = 0
+
         ##sum of total participation fees
         for p in self.player.in_all_rounds():
             payment_payoff += p.round_payoff
+
         ##function to sum round payoffs
         for s in self.subsession.in_all_rounds():
             participation_fee_total += s.get_participation()
+
         ##function to sum total participation fees
-        return{
+        return {
             'player_id': self.player.id_in_group,
             'total_payoff': round((payment_payoff - participation_fee_total)*.5,2)
         }
-page_sequence = [block_page,Market, Results, EndBlock,payment_page]
+
+page_sequence = [block_page, Market, Results, EndBlock, payment_page]

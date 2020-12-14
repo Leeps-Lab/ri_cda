@@ -33,10 +33,8 @@ class Subsession(markets_models.Subsession):
     m = models.IntegerField()
     y = models.IntegerField()
     q = models.IntegerField()
-    expected_value = models.FloatField()
+    # expected_value = models.FloatField()
     default = models.BooleanField()
-    buy_option = models.BooleanField()
-    sell_option = models.BooleanField()
     period_length = models.IntegerField()
 
     @property
@@ -57,9 +55,9 @@ class Subsession(markets_models.Subsession):
         config = self.config
 
     def get_g(self):
-        # if self.g is None:
-        #     self.g = self.config.get('g')
-        #     self.save()
+        if self.g is None:
+            self.g = int(random.uniform(0, 100))
+            self.save()
         return self.config.g
 
     def get_k(self):
@@ -69,44 +67,33 @@ class Subsession(markets_models.Subsession):
         return self.config.k
 
     def get_m(self):
-    #     if self.m is None:
-    #         self.m = self.config.get('m')
-    #         self.save()
-        # if self.config.get('m') is None:
         if not self.m:
             self.m = int(random.uniform(0, 100))
             self.save()
         return self.m
+
     #Need for default
     def get_y(self):
         if not self.y:
             self.y = int(random.uniform(0, 100))
             self.save()
         return self.y
+
     def get_block_total(self):
         return self.config.block_total
+
     def get_participation(self):
         return self.config.participation_fee
+
     def get_round(self):
         return self.config.round
+
     #Default
     def get_default(self):
         if self.default is None:
             self.default = self.get_y() < self.get_g()
             self.save()
         return self.default
-        # return self.config.m
-    # def get_y(self):
-    #     if self.y is None:
-    #         self.y = self.config.get('y')
-    #         self.save()
-    #     return self.y
-
-    # def get_q(self):
-    #     if self.q is None:
-    #         self.q = self.config.get('q')
-    #         self.save()
-    #     return self.q
 
     # def get_expected_value(self):
     #     if self.expected_value is None:
@@ -114,11 +101,6 @@ class Subsession(markets_models.Subsession):
     #         self.save()
     #     return self.expected_value
 
-    # def get_default(self):
-    #     if self.default is None:
-    #         self.default = self.y < self.g
-    #         self.save()
-    #     return self.default
 class Group(markets_models.Group):
 
     def period_length(self):
