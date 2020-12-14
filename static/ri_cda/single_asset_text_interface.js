@@ -31,7 +31,7 @@ class SingleAssetTextInterface extends PolymerElement {
             availableCash: Number,
             step: {
                 type: Number,
-                value: 4, // set for dev, should default to 0
+                value: 0, // set for dev, should default to 0
                 observer: function (step, isResultPage) {
                     setTimeout(function () {
                         if (step && step < 3 && !isResultPage) {  // auto scroll down to next step/screen
@@ -66,7 +66,12 @@ class SingleAssetTextInterface extends PolymerElement {
                 value: 'Next',
             },
             timeRemaining: Number,
-            isResultsPage: Boolean,
+            displayFormat: {
+                type: Object,
+                value: function() {
+                    return cash => `$${parseFloat((cash/100).toFixed(2))}`;
+                },
+            },
         };
     }
 
@@ -241,8 +246,8 @@ class SingleAssetTextInterface extends PolymerElement {
             <paper-button class="btn" on-click="nextStep" hidden$="[[ _updateButtonLabel(step)]]">[[ buttonLabel ]]</paper-button>
         </div>
         <div hidden$="{{ _hidePage() }}">
-            <div>Net Cash: $[[availableCash]]</div>
-            <div>Bonds held: $[[availableAssets]]</div>
+            <div>Net Cash: [[displayFormat(availableCash)]]</div>
+            <div>Bonds held: [[availableAssets]]</div>
         </div>
        `;
     }
@@ -265,7 +270,6 @@ class SingleAssetTextInterface extends PolymerElement {
     // triggered when this player enters an order
     _order_entered(event) {
         const order = event.detail;
-        console.log('order', order);
         if (isNaN(order.price) || isNaN(order.volume)) {
             this.$.log.error('Invalid order entered');
             return;
@@ -282,7 +286,6 @@ class SingleAssetTextInterface extends PolymerElement {
                 this.$.trader_state.cancel_order(asks[0]);
             this.$.trader_state.enter_order(order.price, order.volume, order.is_bid);
         }
-        console.log('bids', this.bids, 'asks', this.asks, 'trades', this.trades);
     }
 
     // triggered when this player cancels an order
@@ -318,7 +321,6 @@ class SingleAssetTextInterface extends PolymerElement {
     // react to the backend confirming that a trade occurred
     _confirm_trade(event) {
         const trade = event.detail;
-        console.log('trade', trade);
         trade.taking_order.price = trade.making_orders[0].price; // show trade price for both
         const all_orders = trade.making_orders.concat([trade.taking_order]);
         for (let order of all_orders) {
@@ -371,13 +373,10 @@ class SingleAssetTextInterface extends PolymerElement {
                     'step': this.step,
                     'precision': this.precision,
                     'cost': this.cost,
-                    // 'bidPrice': this.bidPrice,
-                    // 'askPrice': this.askPrice,
                     'mLow': this.mLow,
                     'mHigh': this.mHigh,
                     'lowValue': this.lowValue,
                     'highValue': this.highValue,
-                    // 'payoff': this.payoff,
                 },
                 eventName: 'getPolymerData'
             }
@@ -405,12 +404,6 @@ class SingleAssetTextInterface extends PolymerElement {
         return step > 2;
     }
 
-    _hidePage() {
-        if (this.isResultPage === undefined)
-            return true;
-        else
-            return !this.isResultPage;
-    }
 }
 
 window.customElements.define('single-asset-text-interface', SingleAssetTextInterface);

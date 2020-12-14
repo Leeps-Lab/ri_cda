@@ -3,6 +3,8 @@ import { html, PolymerElement } from '/static/otree-redwood/node_modules/@polyme
 import './public_info/public_info.js';
 import './info_precision/info_precision.js';
 import './bond_price/bond_price.js';
+import './polymer-elements/paper-button.js';
+
 
 class Results extends PolymerElement {
     static get properties() {
@@ -48,7 +50,7 @@ class Results extends PolymerElement {
             </style>
             <div id="allocation">
                 <div>
-                    <h4> Your bonds <mark class = "red"> [[_getDefault()]] </mark> <br/>
+                    <h4> Your bonds <mark class = "red"> [[_getDefault()]] </mark><br/>
                     Actual held bond payment: [[ bondPayment ]]<br/>
                     Your private info cost: [[ cost ]]</h4>
                 </div>
@@ -57,6 +59,7 @@ class Results extends PolymerElement {
                 <div>Net Cash: $[[_formatCash(availableCash)]]<br/> Bonds held: [[availableAssets]]</div>
                 <div> Payoff: Net Cash + Bond Payment * Number of Held Bonds - Information Cost <\div>
                 <div> $[[_formatCash(availableCash)]] + [[availableAssets]] * [[bondPayment]] = $[[payoff]]</div>
+                <paper-button class="btn" on-click="next">Submit</paper-button>
             </div>
         `;
     }
@@ -82,21 +85,22 @@ class Results extends PolymerElement {
     }
 
     _getpayoff(availableAssets, bondPayment, availableCash) {
-        let val = (availableAssets * bondPayment) + this._formatCash(availableCash);
-        this.dispatchEvent(new CustomEvent('getPolymerData', {
-          bubbles: true,
-          composed: true,
-          detail: {
-              this: this,
-              value: { // values to dispatch to oTree
-                  'payoff': this.payoff,
-              },
-              eventName: 'getPolymerData'
-            }
-        }));
-        return val;
+        return (availableAssets * bondPayment) + this._formatCash(availableCash);
     }
 
+    next() {
+        this.dispatchEvent(new CustomEvent('getPolymerData', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                this: this,
+                value: { // values to dispatch to oTree
+                    'payoff': this.payoff,
+                },
+                eventName: 'getPolymerData'
+              }
+          }));
+    }
 
 }
 

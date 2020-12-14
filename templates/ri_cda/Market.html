@@ -9,6 +9,21 @@
     <script src="{% static 'ri_cda/highcharts.js' %}"></script>
     <script type="module" src="/static/ri_cda/single_asset_text_interface.js"></script>
     <script type="module" src="/static/otree_markets/disable_interface_overlay.js"></script>
+    <script>
+        document.querySelector("#rationalInattentionId").addEventListener('getPolymerData', function (customEvent) {
+            width.value = this.precision;
+            cost.value = this.cost;
+            m_low.value = this.mLow;
+            m_high.value = this.mHigh;
+            low_val.value = this.lowValue;
+            high_val.value = this.highValue;
+            console.log('cost', width.value);
+            // if (this.step > 2) {
+            //     // submits bid/ask prices and moves to wait page until received all players' prices
+            //     $("[id='next_btn']")[0].click();
+            // }
+        });
+    </script>
 {% endblock %}
 
 {% block content %}
@@ -17,9 +32,28 @@
     ></disable-interface-overlay>
 
     <single-asset-text-interface
+        id='rationalInattentionId'
         g="{{ g }}"
         k="{{ k }}"
         m="{{ m }}"
     ></single-asset-text-interface>
 
+    <input type="hidden" name="width" id="width"/>
+    <input type="hidden" name="cost" id="cost"/>
+    <input type="hidden" name="m_low" id="m_low"/>
+    <input type="hidden" name="m_high" id="m_high"/>
+    <input type="hidden" name="low_val" id="low_val"/>
+    <input type="hidden" name="high_val" id="high_val"/>
+
+    {% for field in form %}
+        {% if field.errors %}
+            <div class="fieldWrapper">
+                {{ field.errors }}
+                {{ field.label_tag }} {{ field }}
+                {% if field.help_text %}
+                <p class="help">{{ field.help_text|safe }}</p>
+                {% endif %}
+            </div>
+        {% endif %}
+    {% endfor %}
 {% endblock %}

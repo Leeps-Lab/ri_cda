@@ -27,8 +27,9 @@ class block_page(Page):
         }
 
 class Market(BaseMarketPage):
-    # def get_timeout_seconds(self):
-    #     return self.group.get_remaining_time()
+    form_model = 'player'
+    form_fields = ['width', 'cost', 'm_low', 'm_high', 'low_val', 'high_val']
+
     def before_next_page(self):
         self.player.save()
 
@@ -36,6 +37,9 @@ class Market(BaseMarketPage):
         return self.round_number <= self.subsession.config.num_rounds
 
     def vars_for_template(self):
+        def before_next_page(self):
+            self.player.save()
+
         return {
             # 'round_num': self.subsession.config.get('round'),
             'g': self.subsession.get_g(),
@@ -47,12 +51,14 @@ class Market(BaseMarketPage):
             # 'default': self.subsession.get_default(),
         }
 
-    # def before_next_page(self):
-    #     self.subsession.period_length = 99999
-    #     self.subsession.save()
+    def before_next_page(self):
+        self.subsession.period_length = 99999
+        self.subsession.save()
 # class Wait(WaitPage):
 #     wait_for_all_groups = True
 class Results(Page):
+    form_model = 'player'
+    form_fields = ['round_payoff']
 
     def is_displayed(self):
         return self.round_number <= self.subsession.config.num_rounds

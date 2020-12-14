@@ -48,11 +48,8 @@ class Subsession(markets_models.Subsession):
     def creating_session(self):
         if self.round_number > self.config.num_rounds:
             return
-        self.period_length = self.config.period_length
-        print('creating session', self.period_length)
         self.save()
         return super().creating_session()
-        config = self.config
 
     def get_g(self):
         if self.g is None:
@@ -104,24 +101,32 @@ class Subsession(markets_models.Subsession):
 class Group(markets_models.Group):
 
     def period_length(self):
-        return self.subsession.period_length
-        # pass
+        return self.subsession.config.period_length
 
     def get_data(self):
         self.subsession.period_length = None
         self.subsession.save()
 
 class Player(markets_models.Player):
-    width = models.IntegerField(initial=100)
-    cost = models.FloatField(initial=0)
-    m_low = models.FloatField(initial=0)
-    m_high = models.FloatField(initial=100)
-    low_val = models.FloatField(initial=0)
-    high_val = models.FloatField(initial=100)
-    round_payoff = models.FloatField(initial=100)
+    width = models.IntegerField(initial=100, blank=True)
+    cost = models.FloatField(initial=0, blank=True)
+    m_low = models.FloatField(initial=0, blank=True)
+    m_high = models.FloatField(initial=100, blank=True)
+    low_val = models.FloatField(initial=0, blank=True)
+    high_val = models.FloatField(initial=100, blank=True)
+    round_payoff = models.FloatField(initial=100, blank=True)
 
     def asset_endowment(self):
         return self.subsession.config.asset_endowment
 
     def cash_endowment(self):
         return self.subsession.config.cash_endowment * 100
+
+
+    # def custom_export(self, players):
+    #     # header row
+    #     print(players.values_list())
+    #     yield ['width', 'cost', 'm_low', 'm_high', 'low_val', 'high_val', 'bid_price', 'ask_price', 'bought', 'sold', 'round_payoff']
+    #     for p in players:
+    #         yield [p.width, p.bid_price, p.ask_price, p.bought, p.sold, p.round_payoff]
+

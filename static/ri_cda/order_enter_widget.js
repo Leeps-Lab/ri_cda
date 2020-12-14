@@ -88,8 +88,8 @@ class OrderEnterWidget extends PolymerElement {
                     <div>
                         <h4>Your Allocation</h4>
                     </div>
-                    <div>Net Cash: [[displayFormat(availableCash)]]</div>
-                    <div>Bonds held: [[availableAssets]]</div>
+                    <div>Net Cash: [[ displayFormat(availableCash) ]]</div>
+                    <div>Bonds held: [[ availableAssets ]]</div>
                 </div>
                 <div id="order-input">
                     <h4>Submit an Order</h4>

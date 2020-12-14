@@ -95,7 +95,6 @@ class OrderList extends PolymerElement {
     }
 
     _getOrderClass(order) {
-        console.log(order, order.pcode, this.pcode);
         if (order.pcode == this.pcode)
             return 'my-order';
         else
