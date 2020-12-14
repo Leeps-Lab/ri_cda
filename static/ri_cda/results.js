@@ -30,7 +30,7 @@ class Results extends PolymerElement {
             bids: Array,
             asks: Array,
             trades: Array,
-            // settledAssets: Number,
+            //settledAssets: Number,
             availableAssets: Number,
             // settledCash: Number,
             availableCash: Number,
@@ -38,7 +38,24 @@ class Results extends PolymerElement {
             k: Number,
             m: Number,
             timeRemaining: Number,
-        };
+            default: Boolean,
+            bondPayment: {
+                type: Number,
+                computed: '_getBondPayment(m)',
+                notify: true,
+                reflectToAttribute: true,
+            },
+            payoff: {
+                type: Number,
+                computed: '_getpayoff(availableAssets, bondPayment, availableCash)',
+                notify: true,
+                reflectToAttribute: true,
+            },
+            buttonLabel: {
+                type: String,
+                value: 'Continue',
+            },
+        }
     }
 
     static get template() {
@@ -80,10 +97,17 @@ class Results extends PolymerElement {
                     flex: 1 0 0;
                     min-height: 0;
                 }
+                #allocation {
+                    text-align: center;
+                }
                 .asks {
                     border: 2px solid #007bff;
                     flex: 1 0 0;
                     min-height: 0;
+                }
+                mark.red {
+                    color:#ff0000;
+                    background: none;
                 }
             </style>
             <otree-constants
@@ -104,10 +128,15 @@ class Results extends PolymerElement {
             ></trader-state>
             <div id="allocation">
                 <div>
-                    <h4>Your Allocation</h4>
+                    <h4> Your bonds <mark class = "red"> [[_getDefault()]] </mark> <br/>
+                    Actual Held bond payment: [[ bondPayment ]]<br/>
+                    Your private info cost: [[ cost ]]</h4>
                 </div>
-                <div>Net Cash: $[[availableCash]]</div>
-                <div>Bonds held: $[[availableAssets]]</div>
+                <div>
+                    <h4>Your Allocation</h4>
+                Net Cash: $[[availableCash]]<br/> Bonds held: [[availableAssets]]</div>
+                <div> Payoff: Net Cash + Bond Payment * Number of Held Bonds - Information Cost <\div>
+                <div> $[[availableCash]] + [[availableAssets]] * [[bondPayment]] = $ [[payoff]]</div>
             </div>
         `;
     }
@@ -117,6 +146,34 @@ class Results extends PolymerElement {
         this.pcode = this.$.constants.participantCode;
         console.log(this.availableCash, this.availableAssets);
     }
+    _getBondPayment(m) {
+        return this.default ? m : 100; // 0 if match
+    }
+    _getDefault() {
+      if (this.default) {
+        return 'defaulted.';
+      }
+      else {
+        return 'did not default.'
+      }
+    }
+    _getpayoff(availableAssets, bondPayment, availableCash) {
+        let val = (availableAssets * bondPayment) + availableCash
+        this.dispatchEvent(new CustomEvent('getPolymerData', {
+          bubbles: true,
+          composed: true,
+          detail: {
+              this: this,
+              value: { // values to dispatch to oTree
+                  'payoff': this.payoff,
+              },
+              eventName: 'getPolymerData'
+            }
+        }));
+        return val;
+    }
+
+
 }
 
 window.customElements.define('results-page', Results);

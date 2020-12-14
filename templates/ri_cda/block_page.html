@@ -1,0 +1,16 @@
+{% extends "global/Page.html" %}
+{% load otree static %}
+
+{% block title %}
+<strong>Block: </strong> {{block_num}}
+{% endblock %}
+
+{% block content %}
+<center>Total participation cost for this block is:  <strong> {{participation}} </strong> <center>
+<p></p>
+Keep in mind that the <strong> public information </strong> (default probabilities) and the <strong> cost of more precise private information </strong> differs in each block,
+so be sure to check your screens carefully before you make your choices!
+<p></p>
+<p></p>
+    {% next_button %}
+{% endblock %}

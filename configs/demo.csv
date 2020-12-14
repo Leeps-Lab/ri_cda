@@ -1,2 +1,3 @@
-period_length,asset_endowment,cash_endowment,allow_short,g,k
-600,1,100,false,20,.1
+round,period_length,asset_endowment,cash_endowment,allow_short,g,k,block_total,participation_fee
+1,120,1,100,false,20,.1,2,10
+2,120,1,100,false,20,.1,2,10

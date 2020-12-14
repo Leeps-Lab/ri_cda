@@ -1,0 +1,18 @@
+{% extends "global/Page.html" %}
+{% load otree static %}
+
+{% block title %}
+Payment
+{% endblock %}
+
+{% block content %}
+You have completed the experiment.
+<p>Please hold, while we record your player ID and your payment! </p>
+<p>Your player ID is :  <strong> {{player_id}} </strong><p>
+<p>In addition to your $5 show up fee you will earn $0.5 for every credit earned</p>
+<p>Your additional payment earned: ${{total_payoff}} </p></center>
+<p></p>
+<p></p>
+<p></p>
+
+{% endblock %}

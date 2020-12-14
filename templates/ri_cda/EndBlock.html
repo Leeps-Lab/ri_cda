@@ -1,0 +1,20 @@
+{% extends "global/Page.html" %}
+{% load otree static %}
+{% block styles %}
+<style>
+  .otree-btn-next {
+      content: "Next Block"
+  }
+</style>
+{% endblock %}
+{% block title %}
+Block Results
+{% endblock %}
+
+{% block content %}
+<strong> You have completed block  </strong> {{block_num}}
+<p> The payoff for this block is calculated as the sum of the payoff of each round subtracted by the participation fee of the block:
+</p>
+<p> {{round_payoff }} </p>
+    {% next_button %}
+{% endblock %}
