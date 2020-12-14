@@ -104,7 +104,6 @@ class Subsession(markets_models.Subsession):
 class Group(markets_models.Group):
 
     def period_length(self):
-        print('getting period length', self.subsession.period_length, self.subsession.config.period_length)
         return self.subsession.period_length
         # pass
 

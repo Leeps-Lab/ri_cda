@@ -83,8 +83,6 @@ class OrderList extends PolymerElement {
     ready() {
         super.ready();
         this.pcode = this.$.constants.participantCode;
-
-        console.log('order list items', this.orders);
     }
 
     _getAssetFilterFunc(assetName) {

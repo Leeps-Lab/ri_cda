@@ -7,13 +7,13 @@
 
 {% block scripts %}
     <script type="module" src="{% static 'ri_cda/results.js' %}"></script>
-    <!-- <script>
+    <script>
         document.querySelector("#resultId").addEventListener('getPolymerData', function (customEvent) {
             customEvent.preventDefault();
             round_payoff.value = this.payoff;
             $("[id='next_btn']")[0].click();
         });
-    </script> -->
+    </script>
 {% endblock %}
 
 {% block content %}
@@ -22,8 +22,9 @@
         g="{{ g }}"
         k="{{ k }}"
         m="{{ m }}"
+        cost="{{ player.cost }}"
         available-cash="{{ player.available_cash }}"
-        available-assets="{{ player.available_assets }}"
+        available-assets="{{ available_assets }}"
         default="{{ default }}"
     ></results-page>
     <button id="next_btn" class="otree-btn-next btn btn-primary">Submit</button>

@@ -13,6 +13,7 @@ class Results extends PolymerElement {
             k: Number,
             m: Number,
             default: Boolean,
+            cost: Number,
             bondPayment: {
                 type: Number,
                 computed: '_getBondPayment(m)',
@@ -52,17 +53,17 @@ class Results extends PolymerElement {
                     Your private info cost: [[ cost ]]</h4>
                 </div>
                 <div>
-                    <h4>Your Allocation</h4>
-                Net Cash: $[[_formatCash(availableCash)]]<br/> Bonds held: [[availableAssets]]</div>
+                <h4>Your Allocation</h4>
+                <div>Net Cash: $[[_formatCash(availableCash)]]<br/> Bonds held: [[availableAssets]]</div>
                 <div> Payoff: Net Cash + Bond Payment * Number of Held Bonds - Information Cost <\div>
-                <div> $[[_formatCash(availableCash)]] + [[availableAssets]] * [[bondPayment]] = $ [[payoff]]</div>
+                <div> $[[_formatCash(availableCash)]] + [[availableAssets]] * [[bondPayment]] = $[[payoff]]</div>
             </div>
         `;
     }
 
     ready() {
         super.ready();
-        console.log(this.availableCash, this.availableAssets);
+        console.log(this.availableCash, this.availableAssets, this.cost);
     }
 
     _formatCash(cash) {
@@ -81,7 +82,7 @@ class Results extends PolymerElement {
     }
 
     _getpayoff(availableAssets, bondPayment, availableCash) {
-        let val = (availableAssets * bondPayment) + availableCash
+        let val = (availableAssets * bondPayment) + this._formatCash(availableCash);
         this.dispatchEvent(new CustomEvent('getPolymerData', {
           bubbles: true,
           composed: true,

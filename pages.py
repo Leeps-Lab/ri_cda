@@ -63,6 +63,7 @@ class Results(Page):
             'k': self.subsession.get_k(),
             'm': self.subsession.get_m(),
             'default': self.subsession.get_default(),
+            'available_assets': self.player.available_assets.get('A'),
             # 'y': self.subsession.get_y(),
             # 'q': self.subsession.get_q(),
             # 'expected_value': self.subsession.get_expected_value(),
