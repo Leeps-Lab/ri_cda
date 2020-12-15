@@ -19,7 +19,7 @@ class OrderList extends PolymerElement {
             displayFormat: {
                 type: Object,
                 value: function() {
-                    return order => `@ $${parseFloat((order.price/100).toFixed(2))}`;
+                    return order => `@ $${parseFloat((order.price/100).toFixed(1))}`;
                 },
             },
         };

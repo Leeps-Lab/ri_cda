@@ -202,6 +202,12 @@ class SingleAssetTextInterface extends PolymerElement {
         const asks = this.asks.filter(a => a.pcode === this.pcode);
 
         if (order.is_bid) {
+            // prevents holding more than 2 bonds
+            if (this.availableAssets == 2) {
+                this.$.log.error(`Order rejected: cannot hold more than 2 bonds`);
+                return
+            }
+            // cannot bid higher than previous ask price, if exists
             if (asks.length > 0 && asks[0].price <= order.price) {
                 this.$.log.error(`Order rejected: bid price (${order.price/100}) must be less than existing ask of ${asks[0].price/100}`);
                 return
@@ -211,6 +217,12 @@ class SingleAssetTextInterface extends PolymerElement {
                 this.$.trader_state.cancel_order(bids[0]);
             this.$.trader_state.enter_order(order.price, order.volume, order.is_bid);
         } else {
+            // prevents shorts
+            if (this.availableAssets == 0) {
+                this.$.log.error(`Order rejected: cannot short sell while currently holding 0 bonds`);
+                return
+            }
+            // cannot ask lower than previous bid, if exists
             if (bids.length > 0 && bids[0].price >= order.price) {
                 this.$.log.error(`Order rejected: ask price (${order.price/100}) must be greater than existing bid of ${bids[0].price/100}`);
                 return

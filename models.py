@@ -115,6 +115,10 @@ class Player(markets_models.Player):
     high_val = models.FloatField(initial=100, blank=True)
     round_payoff = models.FloatField(initial=100, blank=True)
 
+    # allow negative settled
+    def check_available(self, is_bid: bool, price: int, volume: int, asset_name: str):
+        return True
+
     def asset_endowment(self):
         return self.subsession.config.asset_endowment
 
