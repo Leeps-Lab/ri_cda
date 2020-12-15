@@ -83,7 +83,7 @@ class EventLog extends PolymerElement {
     }
 
     add(text, type) {
-        this.push('_entries', {
+        this.unshift('_entries', {
             type: type,
             text: text,
         });

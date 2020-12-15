@@ -44,7 +44,7 @@ class Results extends PolymerElement {
                     width: 50px;
                 }
                 mark.red {
-                    color:#ff0000;
+                    color: #ff0000;
                     background: none;
                 }
             </style>
@@ -57,8 +57,8 @@ class Results extends PolymerElement {
                 <div>
                 <h4>Your Allocation</h4>
                 <div>Net Cash: $[[_formatCash(availableCash)]]<br/> Bonds held: [[availableAssets]]</div>
-                <div> Payoff: Net Cash + Bond Payment * Number of Held Bonds - Information Cost </div>
-                <div> $[[_formatCash(availableCash)]] + [[availableAssets]] * [[bondPayment]] - [[cost]] = $[[payoff]]</div>
+                <div> Payoff = Net Cash + Bond Payment * Number of Held Bonds - Information Cost </div>
+                <div style="text-indent: 50px"> $[[_formatCash(availableCash)]] + [[availableAssets]] * [[bondPayment]] - [[cost]] = $[[payoff]]</div>
                 <paper-button class="btn" on-click="next">Continue</paper-button>
             </div>
         `;
