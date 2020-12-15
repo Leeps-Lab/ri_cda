@@ -59,14 +59,9 @@ class Results extends PolymerElement {
                 <div>Net Cash: $[[_formatCash(availableCash)]]<br/> Bonds held: [[availableAssets]]</div>
                 <div> Payoff: Net Cash + Bond Payment * Number of Held Bonds - Information Cost </div>
                 <div> $[[_formatCash(availableCash)]] + [[availableAssets]] * [[bondPayment]] - [[cost]] = $[[payoff]]</div>
-                <paper-button class="btn" on-click="next">Submit</paper-button>
+                <paper-button class="btn" on-click="next">Continue</paper-button>
             </div>
         `;
-    }
-
-    ready() {
-        super.ready();
-        console.log(this.availableCash, this.availableAssets, this.cost);
     }
 
     _formatCash(cash) {
@@ -85,7 +80,7 @@ class Results extends PolymerElement {
     }
 
     _getpayoff(availableAssets, bondPayment, availableCash, cost) {
-        return parseFloat((availableAssets * bondPayment) + this._formatCash(availableCash) - cost);
+        return parseFloat(((availableAssets * bondPayment) + this._formatCash(availableCash) - cost).toFixed(2));
     }
 
     next() {

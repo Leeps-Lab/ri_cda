@@ -26,7 +26,7 @@ class OrderEnterWidget extends PolymerElement {
             displayFormat: {
                 type: Object,
                 value: function() {
-                    return cash => `$${parseFloat((cash/100).toFixed(2))}`;
+                    return cash => `$${parseFloat((cash/100).toFixed(1))}`;
                 },
             },
         };

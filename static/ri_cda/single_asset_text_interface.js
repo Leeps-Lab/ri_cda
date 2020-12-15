@@ -117,7 +117,7 @@ class SingleAssetTextInterface extends PolymerElement {
                     on-confirm-cancel="_confirm_cancel"
                     on-error="_handle_error"
                 ></trader-state>
-
+                <h3 class="top-corner">Time remaining: [[ _timeFormat(timeRemaining) ]]</h3>
             <div class="container" id="main-container">
                 <div>
                     <h3>Bids</h3>
@@ -198,14 +198,24 @@ class SingleAssetTextInterface extends PolymerElement {
             this.$.log.error('Invalid order entered');
             return;
         }
-        // replace previous order if higher bid or lower ask, ignores otherwise
+        const bids = this.bids.filter(b => b.pcode === this.pcode);
+        const asks = this.asks.filter(a => a.pcode === this.pcode);
+
         if (order.is_bid) {
-            const bids = this.bids.filter(b => b.pcode === this.pcode);
+            if (asks.length > 0 && asks[0].price <= order.price) {
+                this.$.log.error(`Order rejected: bid price (${order.price/100}) must be less than existing ask of ${asks[0].price/100}`);
+                return
+            }
+            // replace previous bid, if exists
             if (bids.length > 0)
                 this.$.trader_state.cancel_order(bids[0]);
             this.$.trader_state.enter_order(order.price, order.volume, order.is_bid);
         } else {
-            const asks = this.asks.filter(a => a.pcode === this.pcode);
+            if (bids.length > 0 && bids[0].price >= order.price) {
+                this.$.log.error(`Order rejected: ask price (${order.price/100}) must be greater than existing bid of ${bids[0].price/100}`);
+                return
+            }
+            // replace previous ask, if exists
             if (asks.length > 0)
                 this.$.trader_state.cancel_order(asks[0]);
             this.$.trader_state.enter_order(order.price, order.volume, order.is_bid);
@@ -232,7 +242,7 @@ class SingleAssetTextInterface extends PolymerElement {
         if (order.pcode == this.pcode)
             return;
 
-        this.$.modal.modal_text = `Do you want to ${order.is_bid ? 'buy' : 'sell'} for $${parseFloat((order.price/100).toFixed(2))}?`
+        this.$.modal.modal_text = `Do you want to ${order.is_bid ? 'buy' : 'sell'} for $${parseFloat((order.price/100).toFixed(1))}?`
         this.$.modal.on_close_callback = (accepted) => {
             if (!accepted)
                 return;
@@ -251,7 +261,7 @@ class SingleAssetTextInterface extends PolymerElement {
         if (order.pcode == this.pcode) {
             const type = order.is_bid ? 'bid' : 'ask';
             // this.$.log.info(`You ${order.is_bid ? 'bought' : 'sold'} for $${order.price}`, type);
-            this.$.log.info(`${order.is_bid ? '-' : '+'} $${parseFloat((order.price/100).toFixed(2))}`, type);
+            this.$.log.info(`${order.is_bid ? '-' : '+'} $${parseFloat((order.price/100).toFixed(1))}`, type);
             }
             // this.$.log.info(`You ${order.is_bid ? 'bought' : 'sold'} ${order.traded_volume} ${order.traded_volume == 1 ? 'unit' : 'units'}`);
         }
