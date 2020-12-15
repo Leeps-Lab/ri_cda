@@ -48,7 +48,6 @@ class Subsession(markets_models.Subsession):
     def creating_session(self):
         if self.round_number > self.config.num_rounds:
             return
-        self.save()
         return super().creating_session()
 
     def get_g(self):
@@ -123,10 +122,10 @@ class Player(markets_models.Player):
         return self.subsession.config.cash_endowment * 100
 
 
-    # def custom_export(self, players):
-    #     # header row
-    #     print(players.values_list())
-    #     yield ['width', 'cost', 'm_low', 'm_high', 'low_val', 'high_val', 'bid_price', 'ask_price', 'bought', 'sold', 'round_payoff']
-    #     for p in players:
-    #         yield [p.width, p.bid_price, p.ask_price, p.bought, p.sold, p.round_payoff]
+    def custom_export(self, players):
+        # header row
+        print(players.values_list())
+        yield ['width', 'cost', 'm_low', 'm_high', 'low_val', 'high_val', 'bid_price', 'bought', 'sold', 'round_payoff']
+        for p in players:
+            yield [p.width, p.bid_price, p.ask_price, p.bought, p.sold, p.round_payoff]
 
