@@ -25,6 +25,16 @@ class SingleAssetTextInterface extends PolymerElement {
             // settledCash: Number,
             availableCash: Number,
             timeRemaining: Number,
+            lowValue: Number,
+            highValue: Number,
+            buyOption: {
+                type: Boolean,
+                value: true,
+            },
+            sellOption: {
+                type: Boolean,
+                value: true,
+            },
             displayFormat: {
                 type: Object,
                 value: function() {

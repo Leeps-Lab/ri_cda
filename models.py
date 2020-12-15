@@ -57,10 +57,10 @@ class Subsession(markets_models.Subsession):
         return self.config.g
 
     def get_k(self):
-        # if self.k is None:
-        #     self.k = self.config.get('k')
-        #     self.save()
-        return self.config.k
+        if not self.k:
+            self.k = self.config.k
+            self.save()
+        return self.k
 
     def get_m(self):
         if not self.m:

@@ -32,14 +32,6 @@ class RICda extends PolymerElement {
             highValue: Number,
             bidPrice: Number,
             askPrice: Number,
-            buyOption: {
-                type: Boolean,
-                value: true,
-            },
-            sellOption: {
-                type: Boolean,
-                value: true,
-            },
             buttonLabel: {
                 type: String,
                 value: 'Next',
