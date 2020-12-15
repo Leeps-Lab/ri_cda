@@ -9,21 +9,6 @@
     <script src="{% static 'ri_cda/highcharts.js' %}"></script>
     <script type="module" src="/static/ri_cda/single_asset_text_interface.js"></script>
     <script type="module" src="/static/otree_markets/disable_interface_overlay.js"></script>
-    <script>
-        document.querySelector("#rationalInattentionId").addEventListener('getPolymerData', function (customEvent) {
-            width.value = this.precision;
-            cost.value = this.cost;
-            m_low.value = this.mLow;
-            m_high.value = this.mHigh;
-            low_val.value = this.lowValue;
-            high_val.value = this.highValue;
-            console.log('width', width.value, 'cost', cost.value);
-            // if (this.step > 2) {
-            //     // submits bid/ask prices and moves to wait page until received all players' prices
-            //     $("[id='next_btn']")[0].click();
-            // }
-        });
-    </script>
 {% endblock %}
 
 {% block content %}
@@ -32,7 +17,6 @@
     ></disable-interface-overlay>
 
     <single-asset-text-interface
-        id='rationalInattentionId'
         g="{{ g }}"
         k="{{ k }}"
         m="{{ m }}"

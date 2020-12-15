@@ -1,0 +1,72 @@
+{% extends "global/Page.html" %}
+{% load otree static %}
+
+{% block title %}
+    RI-CDA
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'ri_cda/highcharts.js' %}"></script>
+    <script type="module" src="{% static 'ri_cda/ri_cda.js' %}"></script>
+    <script>
+        document.querySelector("#startId").addEventListener('getPolymerData', function (customEvent) {
+            customEvent.preventDefault();
+            width.value = this.precision;
+            cost.value = this.cost;
+            m_low.value = this.mLow;
+            m_high.value = this.mHigh;
+            low_val.value = this.lowValue;
+            high_val.value = this.highValue;
+            if (this.step > 2) {
+                // submits bid/ask prices and moves to wait page until received all players' prices
+                $("[id='next_btn']")[0].click();
+            }
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+    <ri-cda
+        id="startId"
+        g="{{ g }}"
+        k="{{ k }}"
+        m="{{ m }}"
+        available-cash="{{ player.available_cash }}"
+        available-assets="{{ player.available_assets }}"
+    ></ri-cda>
+  
+    <button id="next_btn" class="otree-btn-next btn btn-primary">Submit</button>
+
+    <input type="hidden" name="width" id="width"/>
+    <input type="hidden" name="cost" id="cost"/>
+    <input type="hidden" name="m_low" id="m_low"/>
+    <input type="hidden" name="m_high" id="m_high"/>
+    <input type="hidden" name="low_val" id="low_val"/>
+    <input type="hidden" name="high_val" id="high_val"/>
+
+    {% for field in form %}
+        {% if field.errors %}
+            <div class="fieldWrapper">
+                {{ field.errors }}
+                {{ field.label_tag }} {{ field }}
+                {% if field.help_text %}
+                <p class="help">{{ field.help_text|safe }}</p>
+                {% endif %}
+            </div>
+        {% endif %}
+    {% endfor %}
+{% endblock %}
+
+{% block styles %}
+    <style>
+        .content {
+            display: flex;
+            justify-content: center;
+        }
+        #next_btn {
+            display: none;
+            float: right;
+            margin-right: 5%;
+        }
+    </style>
+{% endblock %}

@@ -26,9 +26,25 @@ class block_page(Page):
             'participation': participation,
         }
 
-class Market(BaseMarketPage):
+class Start(Page):
     form_model = 'player'
     form_fields = ['width', 'cost', 'm_low', 'm_high', 'low_val', 'high_val']
+
+    def is_displayed(self):
+        return self.round_number <= self.subsession.config.num_rounds
+
+    def vars_for_template(self):
+
+        return {
+            # 'round_num': self.subsession.config.get('round'),
+            'g': self.subsession.get_g(),
+            'k': self.subsession.get_k(),
+            'm': self.subsession.get_m(),
+            # 'y': self.subsession.get_y(),
+            # 'q': self.subsession.get_q(),
+            # 'expected_value': self.subsession.get_expected_value(),
+        }
+class Market(BaseMarketPage):
 
     # def get_timeout_seconds(self):
     #     return self.group.get_remaining_time()
@@ -125,4 +141,4 @@ class payment_page(Page):
             'total_payoff': round((payment_payoff - participation_fee_total)*.5,2)
         }
 
-page_sequence = [block_page, Market, Results, EndBlock, payment_page]
+page_sequence = [block_page, Start, Market, Results, EndBlock, payment_page]
