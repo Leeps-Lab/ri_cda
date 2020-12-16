@@ -14,6 +14,13 @@ class Results extends PolymerElement {
             g: Number,
             k: Number,
             m: Number,
+            y: Number,
+            isdefault: {
+                type: Boolean,
+                computed: '_getisdefault(y,g)',
+                nofity: true,
+                reflectToAttribute: true,
+            },
             default: Boolean,
             cost: Number,
             bondPayment: {
@@ -58,22 +65,25 @@ class Results extends PolymerElement {
                 <h4>Your Allocation</h4>
                 <div>Net Cash: $[[_formatCash(availableCash)]]<br/> Bonds held: [[availableAssets]]</div>
                 <div> Payoff = Net Cash + Bond Payment * Number of Held Bonds - Information Cost </div>
-                <div style="text-indent: 50px"> $[[_formatCash(availableCash)]] + [[availableAssets]] * [[bondPayment]] - [[cost]] = $[[payoff]]</div>
+                <div > $[[payoff]] = $[[_formatCash(availableCash)]] + [[availableAssets]] * [[bondPayment]] - [[cost]] </div>
                 <paper-button class="btn" on-click="next">Continue</paper-button>
             </div>
         `;
     }
 
     _formatCash(cash) {
-        return parseFloat((cash/100).toFixed(2));
-    } 
+        return parseFloat((cash/100 - 100).toFixed(2));
+    }
+    _getisdefault(y,g) {
+        return y < g;
+    }
 
     _getBondPayment(m) {
-        return this.default ? m : 100; // 0 if match
+        return this.isdefault ? m : 100; // 0 if match
     }
 
     _getDefault() {
-      if (this.default)
+      if (this.isdefault)
         return 'defaulted.';
       else
         return 'did not default.'

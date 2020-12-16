@@ -86,7 +86,7 @@ class Results(Page):
             'm': self.subsession.get_m(),
             'default': self.subsession.get_default(),
             'available_assets': self.player.available_assets.get('A'),
-            # 'y': self.subsession.get_y(),
+            'y': self.subsession.get_y(),
             # 'q': self.subsession.get_q(),
             # 'expected_value': self.subsession.get_expected_value(),
             # 'default': self.subsession.get_default(),
@@ -139,4 +139,4 @@ class payment_page(Page):
             'total_payoff': round((payment_payoff - participation_fee_total)*.5,2)
         }
 
-page_sequence = [block_page, Start, Market, Results, EndBlock, payment_page]
+page_sequence = [block_page, Start, Market, Results]

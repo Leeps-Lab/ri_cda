@@ -132,4 +132,3 @@ class Player(markets_models.Player):
         yield ['width', 'cost', 'm_low', 'm_high', 'low_val', 'high_val', 'bid_price', 'bought', 'sold', 'round_payoff']
         for p in players:
             yield [p.width, p.bid_price, p.ask_price, p.bought, p.sold, p.round_payoff]
-
