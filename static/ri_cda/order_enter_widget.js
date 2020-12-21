@@ -4,7 +4,7 @@ import './polymer-elements/paper-button.js';
 
 /*
     this component contains displays of the player's cash and asset allocations, and has inputs
-    which allow the player to enter orders. when an order is entered, 
+    which allow the player to enter orders. when an order is entered,
     this component emits an 'order-entered' event.
 */
 
@@ -51,10 +51,15 @@ class OrderEnterWidget extends PolymerElement {
                 }
                 #order-input {
                     text-align: center;
-                    width: 75%;
+                    width: 100%;
                 }
                 #allocation > div:first-child {
                     text-align: center;
+                    color: orange;
+                }
+                #bonds {
+                    text-align: left;
+                    color: orange;
                 }
                 .btn {
                     height: 35px;
@@ -67,7 +72,7 @@ class OrderEnterWidget extends PolymerElement {
                     background-color: #007bff;
                 }
                 .buy-sell-text {
-                text-align: left;
+                text-align: center;
                 }
                 .val {
                     font-weight: bold;
@@ -83,18 +88,21 @@ class OrderEnterWidget extends PolymerElement {
                 }
             </style>
 
-            <div id="container">
+            <!--div id="container">
                 <div id="allocation">
                     <div>
                         <h4>Your Allocation</h4>
                     </div>
                     <div>Net Cash: [[ displayFormat(availableCash) ]]</div>
                     <div>Bonds held: [[ availableAssets ]]</div>
-                </div>
+                </div -->
+              <div id = "bonds"> <\strong> Current Allocation: Bonds held: [[ availableAssets ]] <strong> </div>
                 <div id="order-input">
+                      <div id="allocation">
+
                     <h4>Submit an Order</h4>
 
-                    
+
         <h4 hidden$="[[ sellOption ]]">Select the price for which you'd like to <span class="buy val">buy</span> the bond by sliding
         <img src="../../../../../static/ri_call_market/shared/buy_marker.png" alt="buy marker failed to load :(">
         <span class="buy val">(bid)</span>.</h4>
