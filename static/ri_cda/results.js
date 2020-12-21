@@ -67,9 +67,9 @@ class Results extends PolymerElement {
                 </div>
                 <div>
                 <h4>Your Allocation</h4>
-                <div>Net Cash: $[[_formatCash(availableCash)]]<br/> Bonds held: [[availableAssets]]</div>
+                <div>Net Cash: [[_formatCash(availableCash)]]<br/> Bonds held: [[availableAssets]]</div>
                 <div> Payoff = Net Cash + Bond Payment * Number of Held Bonds - Information Cost </div>
-                <div > $[[payoff]] = $[[_formatCash(availableCash)]] + [[availableAssets]] * [[bondPayment]] - [[cost]] </div>
+                <div > [[payoff]] = [[_formatCash(availableCash)]] + [[availableAssets]] * [[bondPayment]] - [[cost]] </div>
                 <paper-button class="btn" on-click="next">Continue</paper-button>
             </div>
         `;
