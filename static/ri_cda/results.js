@@ -54,10 +54,14 @@ class Results extends PolymerElement {
                     color: #ff0000;
                     background: none;
                 }
+                mark.green {
+                    color: #00FF00;
+                    background: none;
+                }
             </style>
             <div id="allocation">
                 <div>
-                    <h4> Your bonds <mark class = "red"> [[_getDefault()]] </mark><br/>
+                    <h4> Your bonds <mark class$ = [[_getDefaultcolor(isdefault)]]> [[_getDefault()]] </mark><br/>
                     Actual held bond payment: [[ bondPayment ]]<br/>
                     Your private info cost: [[ cost ]]</h4>
                 </div>
@@ -80,6 +84,12 @@ class Results extends PolymerElement {
 
     _getBondPayment(m) {
         return this.isdefault ? m : 100; // 0 if match
+    }
+    _getDefaultcolor(isdefault) {
+        if (isdefault)
+          return 'red';
+        else
+          return 'green';
     }
 
     _getDefault() {
