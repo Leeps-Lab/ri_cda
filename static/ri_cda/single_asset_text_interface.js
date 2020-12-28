@@ -20,9 +20,9 @@ class SingleAssetTextInterface extends PolymerElement {
             bids: Array,
             asks: Array,
             trades: Array,
-            // settledAssets: Number,
+            settledAssets: Number,
             availableAssets: Number,
-            // settledCash: Number,
+            settledCash: Number,
             availableCash: Number,
             timeRemaining: Number,
             lowValue: Number,
@@ -41,6 +41,15 @@ class SingleAssetTextInterface extends PolymerElement {
                     return cash => `$${parseFloat((cash/100).toFixed(2))}`;
                 },
             },
+            currentBid: {
+                type: Number,
+                computed: '_getCurrentBid(bids)',
+            },
+            currentAsk: {
+                type: Number,
+                computed: '_getCurrentAsk(asks)',
+            },
+            roundNumber: Number,
         };
     }
 
@@ -154,11 +163,13 @@ class SingleAssetTextInterface extends PolymerElement {
                         class="flex-fill"
                         id="log"
                         max-entries=100
+                        round-number="[[ roundNumber ]]"
                     ></event-log>
                 </div>
             </div>
             <div>
                 <order-enter-widget
+                    id="widget"
                     class="flex-fill"
                     settled-assets="{{settledAssets}}"
                     available-assets="{{availableAssets}}"
@@ -170,6 +181,8 @@ class SingleAssetTextInterface extends PolymerElement {
                     high-value="[[ highValue ]]"
                     buy-option="[[ buyOption ]]"
                     sell-option="[[ sellOption ]]"
+                    current-bid="[[ CurrentBid ]]"
+                    current-ask="[[ CurrentAsk ]]"
                     on-order-entered="_order_entered"
                 ></order-enter-widget>
             </div>
@@ -195,37 +208,27 @@ class SingleAssetTextInterface extends PolymerElement {
     _order_entered(event) {
         const order = event.detail;
         if (isNaN(order.price) || isNaN(order.volume)) {
-            this.$.log.error('Invalid order entered');
+            this.$.widget.setLimitText('Invalid order entered');
             return;
         }
         const bids = this.bids.filter(b => b.pcode === this.pcode);
         const asks = this.asks.filter(a => a.pcode === this.pcode);
 
         if (order.is_bid) {
-            // prevents holding more than 2 bonds
-            if (this.availableAssets == 2) {
-                this.$.log.error(`Order rejected: cannot hold more than 2 bonds`);
-                return
-            }
             // cannot bid higher than previous ask price, if exists
             if (asks.length > 0 && asks[0].price <= order.price) {
-                this.$.log.error(`Order rejected: bid price (${order.price/100}) must be less than existing ask of ${asks[0].price/100}`);
-                return
+                this.$.widget.setLimitText(`Order rejected: bid price (${order.price/100}) must be less than existing ask of ${asks[0].price/100}`);
+                return;
             }
             // replace previous bid, if exists
             if (bids.length > 0)
                 this.$.trader_state.cancel_order(bids[0]);
             this.$.trader_state.enter_order(order.price, order.volume, order.is_bid);
         } else {
-            // prevents shorts
-            if (this.availableAssets == 0) {
-                this.$.log.error(`Order rejected: cannot short sell while currently holding 0 bonds`);
-                return
-            }
             // cannot ask lower than previous bid, if exists
             if (bids.length > 0 && bids[0].price >= order.price) {
-                this.$.log.error(`Order rejected: ask price (${order.price/100}) must be greater than existing bid of ${bids[0].price/100}`);
-                return
+                this.$.widget.setLimitText(`Order rejected: ask price (${order.price/100}) must be greater than existing bid of ${bids[0].price/100}`);
+                return;
             }
             // replace previous ask, if exists
             if (asks.length > 0)
@@ -306,6 +309,16 @@ class SingleAssetTextInterface extends PolymerElement {
         const minutes = parseInt(time / 60);
         const seconds = parseInt(time % 60);
         return seconds >= 10 ? minutes + ":" + seconds : minutes + ":0" + seconds;
+    }
+
+    _getCurrentBid(bids) {
+        const myBids = bids.filter(b => b.pcode === this.pcode);
+        return myBids[0];
+    }
+
+    _getCurrentAsk(asks) {
+        const myAsks = asks.filter(a => a.pcode === this.pcode);
+        return myAsks[0];
     }
 
 }

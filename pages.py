@@ -36,7 +36,6 @@ class Start(Page):
     def vars_for_template(self):
 
         return {
-            # 'round_num': self.subsession.config.get('round'),
             'g': self.subsession.get_g(),
             'k': self.subsession.get_k(),
             'm': self.subsession.get_m(),
@@ -62,7 +61,7 @@ class Market(BaseMarketPage):
             self.player.save()
 
         return {
-            # 'round_num': self.subsession.config.get('round'),
+            'round_num': self.subsession.config.round,
             'g': self.subsession.get_g(),
             'm': self.subsession.get_m(),
             # 'y': self.subsession.get_y(),

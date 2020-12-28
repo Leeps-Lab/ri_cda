@@ -13,8 +13,10 @@ class OrderEnterWidget extends PolymerElement {
     static get properties() {
         return {
             cash: Number,
+            settledCash: Number,
             settledAssets: Number,
             availableAssets: Number,
+            settledAssets: Number,
             buyPrice: {
                 type: Number,
                 value: 0,
@@ -25,10 +27,19 @@ class OrderEnterWidget extends PolymerElement {
             },
             displayFormat: {
                 type: Object,
-                value: function() {
-                    return cash => `$${parseFloat((cash/100).toFixed(1))}`;
+                value: function () {
+                    return cash => `$${parseFloat((cash / 100).toFixed(1))}`;
                 },
             },
+            disableBid: {
+                type: Boolean,
+                computed: "_disableBid(settledAssets)",
+            },
+            disableAsk: {
+                type: Boolean,
+                computed: "_disableAsk(settledAssets)",
+            },
+            limitText: String,
         };
     }
 
@@ -60,6 +71,7 @@ class OrderEnterWidget extends PolymerElement {
                 #bonds {
                     text-align: left;
                     color: orange;
+                    font-weight: bold;
                 }
                 .btn {
                     height: 35px;
@@ -87,39 +99,21 @@ class OrderEnterWidget extends PolymerElement {
                 height: 2em;
                 }
             </style>
-
-            <!--div id="container">
-                <div id="allocation">
-                    <div>
-                        <h4>Your Allocation</h4>
-                    </div>
-                    <div>Net Cash: [[ displayFormat(availableCash) ]]</div>
-                    <div>Bonds held: [[ availableAssets ]]</div>
-                </div -->
-              <div id = "bonds"> <\strong> Current Allocation: Bonds held: [[ availableAssets ]] <strong> </div>
+            <div id="bonds">Current Allocation: [[displayFormat(settledCash) ]]<br/>Bonds held: [[ settledAssets ]]</div>
                 <div id="order-input">
-                      <div id="allocation">
 
                     <h4>Submit an Order</h4>
 
+                    <p class="buy-sell-text">
+                        Select the price for which you'd like to <span class="buy val">buy</span> the bond by sliding
+                    <img src="../../../../../static/ri_call_market/shared/buy_marker.png" alt="buy marker failed to load :(">
+                    <span class="buy val">(bid)</span>, and the price for which you'd like to <span class="sell val">sell</span>
+                    the bond by sliding
+                    <img src="../../../../../static/ri_call_market/shared/sell_marker.png" alt="buy marker failed to load :(">
+                    <span class="sell val">(ask)</span>.</p>
 
-        <h4 hidden$="[[ sellOption ]]">Select the price for which you'd like to <span class="buy val">buy</span> the bond by sliding
-        <img src="../../../../../static/ri_call_market/shared/buy_marker.png" alt="buy marker failed to load :(">
-        <span class="buy val">(bid)</span>.</h4>
-
-        <h4 hidden$="[[ buyOption ]]">Select the price for which you'd like to <span class="sell val">sell</span> the bond by sliding
-        <img src="../../../../../static/ri_call_market/shared/sell_marker.png" alt="buy marker failed to load :(">
-        <span class="sell val">(ask)</span>.</h4>
-
-        <p class="buy-sell-text" hidden$="[[ _hideOption(buyOption, sellOption) ]]">
-            Select the price for which you'd like to <span class="buy val">buy</span> the bond by sliding
-        <img src="../../../../../static/ri_call_market/shared/buy_marker.png" alt="buy marker failed to load :(">
-        <span class="buy val">(bid)</span>, and the price for which you'd like to <span class="sell val">sell</span>
-        the bond by sliding
-        <img src="../../../../../static/ri_call_market/shared/sell_marker.png" alt="buy marker failed to load :(">
-        <span class="sell val">(ask)</span>.</p>
-        <p class="buy-sell-text">Click <span class="buy val">Enter bid</span> and <span class="sell val">Enter ask</span>
-        to submit the corresponding value.</p>
+                    <p class="buy-sell-text">Click <span class="buy val">Enter bid</span> and <span class="sell val">Enter ask</span>
+                    to submit the corresponding value.</p>
 
                     <buysell-slider
                         low-value="[[ lowValue ]]"
@@ -129,10 +123,10 @@ class OrderEnterWidget extends PolymerElement {
                         buy-price="{{ buyPrice }}"
                         sell-price="{{ sellPrice }}"
                     ></buysell-slider>
-
+                    <h4>[[ limitText ]]</h4>
                     <div>
-                        <paper-button class="bid-btn btn" on-click="_enter_bid">Enter bid</paper-button>
-                        <paper-button class="ask-btn btn" on-click="_enter_ask">Enter ask</paper-button>
+                        <paper-button class="bid-btn btn" on-click="_enter_bid" disabled="[[ disableBid ]]">Enter bid</paper-button>
+                        <paper-button class="ask-btn btn" on-click="_enter_ask" disabled="[[ disableAsk ]]">Enter ask</paper-button>
                     </div>
                 </div>
             </div>
@@ -147,6 +141,7 @@ class OrderEnterWidget extends PolymerElement {
             volume: 1,
             is_bid: true,
         }
+        this.limitText = "";
         this.dispatchEvent(new CustomEvent('order-entered', { detail: order }));
     }
 
@@ -157,6 +152,7 @@ class OrderEnterWidget extends PolymerElement {
             volume: 1,
             is_bid: false,
         }
+        this.limitText = "";
         this.dispatchEvent(new CustomEvent('order-entered', { detail: order }));
     }
 
@@ -168,6 +164,38 @@ class OrderEnterWidget extends PolymerElement {
             return true;
     }
 
+    _disableBid(settledAssets) {
+        // prevents holding more than 2 bonds
+        if (settledAssets == 2) {
+            this.limitText = "Cannot submit bid: holding 2 bonds";
+            return true;
+        }
+
+        // if (buyPrice * 100 > currentAsk) {
+        //     console.error(`Bid price (${buyPrice}) must be less than existing ask of ${currentAsk/100}`);
+        // }
+        this.limitText = "";
+        return false;
+    }
+
+    _disableAsk(settledAssets) {
+        // prevents short selling
+        if (settledAssets == 0) {
+            this.limitText = "Cannot submit ask: holding 0 bonds";
+            return true;
+        }
+        
+        // if (sellPrice * 100 < currentBid) {
+            //     console.error(`Ask price (${sellPrice}) must be greater than existing bid of ${currentBid/100}`);
+            //     return true;
+            // }
+        this.limitText = "";
+        return false;
+    }
+
+    setLimitText(text) {
+        this.limitText = text;
+    }
 }
 
 window.customElements.define('order-enter-widget', OrderEnterWidget);
