@@ -99,7 +99,7 @@ class OrderEnterWidget extends PolymerElement {
                 height: 2em;
                 }
             </style>
-            <div id="bonds">Current Allocation: [[displayFormat(settledCash) ]]<br/>Bonds held: [[ settledAssets ]]</div>
+            <div id="bonds">Net Credits: [[displayFormat(settledCash) ]]<br/>Bonds held: [[ settledAssets ]]</div>
                 <div id="order-input">
 
                     <h4>Submit an Order</h4>
@@ -184,7 +184,7 @@ class OrderEnterWidget extends PolymerElement {
             this.limitText = "Cannot submit ask: holding 0 bonds";
             return true;
         }
-        
+
         // if (sellPrice * 100 < currentBid) {
             //     console.error(`Ask price (${sellPrice}) must be greater than existing bid of ${currentBid/100}`);
             //     return true;

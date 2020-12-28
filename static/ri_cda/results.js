@@ -69,14 +69,14 @@ class Results extends PolymerElement {
                 <h4>Your Allocation</h4>
                 <div>Net Cash: [[_formatCash(availableCash)]]<br/> Bonds held: [[availableAssets]]</div>
                 <div> Payoff = Net Cash + Bond Payment * Number of Held Bonds - Information Cost </div>
-                <div > [[payoff]] = [[_formatCash(availableCash)]] + [[availableAssets]] * [[bondPayment]] - [[cost]] </div>
+                <div > [[payoff]] = [[_formatCash(availableCash)]] + [[bondPayment]] * [[availableAssets]] - [[cost]] </div>
                 <paper-button class="btn" on-click="next">Continue</paper-button>
             </div>
         `;
     }
 
     _formatCash(cash) {
-        return parseFloat((cash/100 - 100).toFixed(2));
+        return parseFloat((cash/100).toFixed(2));
     }
     _getisdefault(y,g) {
         return y < g;

@@ -123,7 +123,7 @@ class Player(markets_models.Player):
         return self.subsession.config.asset_endowment
 
     def cash_endowment(self):
-        return self.subsession.config.cash_endowment * 100
+        return 0
 
 
     def custom_export(self, players):
