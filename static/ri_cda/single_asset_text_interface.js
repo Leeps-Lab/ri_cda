@@ -224,6 +224,7 @@ class SingleAssetTextInterface extends PolymerElement {
             if (bids.length > 0)
                 this.$.trader_state.cancel_order(bids[0]);
             this.$.trader_state.enter_order(order.price, order.volume, order.is_bid);
+            this.$.widget.disableSubmit('bid');
         } else {
             // cannot ask lower than previous bid, if exists
             if (bids.length > 0 && bids[0].price >= order.price) {
@@ -234,6 +235,7 @@ class SingleAssetTextInterface extends PolymerElement {
             if (asks.length > 0)
                 this.$.trader_state.cancel_order(asks[0]);
             this.$.trader_state.enter_order(order.price, order.volume, order.is_bid);
+            this.$.widget.disableSubmit('ask');
         }
     }
 
@@ -257,7 +259,12 @@ class SingleAssetTextInterface extends PolymerElement {
         if (order.pcode == this.pcode)
             return;
 
-        this.$.modal.modal_text = `Do you want to ${order.is_bid ? 'buy' : 'sell'} for $${parseFloat((order.price/100).toFixed(1))}?`
+        if ((this.settledAssets === 0 && order.is_bid) || (this.settledAssets === 2 && !order.is_bid)) {
+            this.$.widget.setLimitText(`Cannot accept ${order.is_bid ? 'bid' : 'ask'}: holding ${this.settledAssets} bonds`);
+            return;
+        }
+
+        this.$.modal.modal_text = `Do you want to ${order.is_bid ? 'sell' : 'buy'} for $${parseFloat((order.price/100).toFixed(1))}?`
         this.$.modal.on_close_callback = (accepted) => {
             if (!accepted)
                 return;

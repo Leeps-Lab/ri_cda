@@ -96,7 +96,10 @@ class OrderEnterWidget extends PolymerElement {
                     color: #007bff;
                 }
                 img {
-                height: 2em;
+                    height: 2em;
+                }
+                .limit-text {
+                    color: red;
                 }
             </style>
             <div id="bonds">Net Credits: [[displayFormat(settledCash) ]]<br/>Bonds held: [[ settledAssets ]]</div>
@@ -123,7 +126,7 @@ class OrderEnterWidget extends PolymerElement {
                         buy-price="{{ buyPrice }}"
                         sell-price="{{ sellPrice }}"
                     ></buysell-slider>
-                    <h4>[[ limitText ]]</h4>
+                    <h4 class="limit-text">[[ limitText ]]</h4>
                     <div>
                         <paper-button class="bid-btn btn" on-click="_enter_bid" disabled="[[ disableBid ]]">Enter bid</paper-button>
                         <paper-button class="ask-btn btn" on-click="_enter_ask" disabled="[[ disableAsk ]]">Enter ask</paper-button>
@@ -135,6 +138,7 @@ class OrderEnterWidget extends PolymerElement {
 
 
     _enter_bid() {
+        this.disableSubmit('bid');
         const price = this.buyPrice; // must be whole numbers, breaks with decimals
         const order = {
             price: parseInt(price * 100),
@@ -146,6 +150,7 @@ class OrderEnterWidget extends PolymerElement {
     }
 
     _enter_ask() {
+        this.disableSubmit('ask');
         const price = this.sellPrice;
         const order = {
             price: parseInt(price * 100),
@@ -166,7 +171,7 @@ class OrderEnterWidget extends PolymerElement {
 
     _disableBid(settledAssets) {
         // prevents holding more than 2 bonds
-        if (settledAssets == 2) {
+        if (settledAssets === 2) {
             this.limitText = "Cannot submit bid: holding 2 bonds";
             return true;
         }
@@ -180,7 +185,7 @@ class OrderEnterWidget extends PolymerElement {
 
     _disableAsk(settledAssets) {
         // prevents short selling
-        if (settledAssets == 0) {
+        if (settledAssets === 0) {
             this.limitText = "Cannot submit ask: holding 0 bonds";
             return true;
         }
@@ -195,6 +200,13 @@ class OrderEnterWidget extends PolymerElement {
 
     setLimitText(text) {
         this.limitText = text;
+    }
+
+    disableSubmit(type) {
+        if (type === 'bid')
+            this.disableBid = !this.disableBid;
+        else if (type === 'ask')
+            this.disableAsk = !this.disableAsk;
     }
 }
 
