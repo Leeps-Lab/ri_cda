@@ -221,8 +221,9 @@ class SingleAssetTextInterface extends PolymerElement {
                 return;
             }
             // replace previous bid, if exists
-            if (bids.length > 0)
-                this.$.trader_state.cancel_order(bids[0]);
+            for(let i = 0; i < bids.length; i++) {
+                this.$.trader_state.cancel_order(bids[i]);
+            }
             this.$.trader_state.enter_order(order.price, order.volume, order.is_bid);
             this.$.widget.disableSubmit('bid');
         } else {
@@ -232,8 +233,9 @@ class SingleAssetTextInterface extends PolymerElement {
                 return;
             }
             // replace previous ask, if exists
-            if (asks.length > 0)
-                this.$.trader_state.cancel_order(asks[0]);
+            for(let i = 0; i < asks.length; i++) {
+                this.$.trader_state.cancel_order(asks[i]);
+            }
             this.$.trader_state.enter_order(order.price, order.volume, order.is_bid);
             this.$.widget.disableSubmit('ask');
         }
