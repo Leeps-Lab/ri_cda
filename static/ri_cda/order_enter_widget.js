@@ -87,7 +87,13 @@ class OrderEnterWidget extends PolymerElement {
                 text-align: center;
                 }
                 .val {
-                    font-weight: bold;
+                font-weight: bold;
+                }
+                .low {
+                    color: #7A70CC;
+                }
+                .high {
+                    color: #CCCC00;
                 }
                 .buy {
                     color: #2F3238;
@@ -105,19 +111,6 @@ class OrderEnterWidget extends PolymerElement {
             <div id="bonds">Net Credits: [[displayFormat(settledCash) ]]<br/>Bonds held: [[ settledAssets ]]</div>
                 <div id="order-input">
 
-                    <h4>Submit an Order</h4>
-
-                    <p class="buy-sell-text">
-                        Select the price for which you'd like to <span class="buy val">buy</span> the bond by sliding
-                    <img src="../../../../../static/ri_call_market/shared/buy_marker.png" alt="buy marker failed to load :(">
-                    <span class="buy val">(bid)</span>, and the price for which you'd like to <span class="sell val">sell</span>
-                    the bond by sliding
-                    <img src="../../../../../static/ri_call_market/shared/sell_marker.png" alt="buy marker failed to load :(">
-                    <span class="sell val">(ask)</span>.</p>
-
-                    <p class="buy-sell-text">Click <span class="buy val">Enter bid</span> and <span class="sell val">Enter ask</span>
-                    to submit the corresponding value.</p>
-
                     <buysell-slider
                         low-value="[[ lowValue ]]"
                         high-value="[[ highValue ]]"
@@ -131,6 +124,25 @@ class OrderEnterWidget extends PolymerElement {
                         <paper-button class="bid-btn btn" on-click="_enter_bid" disabled="[[ disableBid ]]">Enter bid</paper-button>
                         <paper-button class="ask-btn btn" on-click="_enter_ask" disabled="[[ disableAsk ]]">Enter ask</paper-button>
                     </div>
+
+                    <p>Lowest expected bond value: <span class="non-def">[[ _getNondefault(defaultProb) ]]%</span> * 100 + <span class="def">[[ defaultProb ]]%</span>
+                    * [[ mLow ]] = <span class="low val">[[ lowValue ]]</span></p>
+                    <p>Highest expected bond value: <span class="non-def">[[ _getNondefault(defaultProb) ]]%</span> * 100 + <span class="def">[[ defaultProb ]]%</span>
+                    * [[ mHigh ]] = <span class="high val">[[ highValue ]]</span></p>
+
+                    <h4>Submit an Order</h4>
+
+                    <p class="buy-sell-text">
+                        Select the price for which you'd like to <span class="buy val">buy</span> the bond by sliding
+                    <img src="../../../../../static/ri_call_market/shared/buy_marker.png" alt="buy marker failed to load :(">
+                    <span class="buy val">(bid)</span>, and the price for which you'd like to <span class="sell val">sell</span>
+                    the bond by sliding
+                    <img src="../../../../../static/ri_call_market/shared/sell_marker.png" alt="buy marker failed to load :(">
+                    <span class="sell val">(ask)</span>.</p>
+
+                    <p class="buy-sell-text">Click <span class="buy val">Enter bid</span> and <span class="sell val">Enter ask</span>
+                    to submit the corresponding value.</p>
+
                 </div>
             </div>
         `;
@@ -191,9 +203,9 @@ class OrderEnterWidget extends PolymerElement {
         }
 
         // if (sellPrice * 100 < currentBid) {
-            //     console.error(`Ask price (${sellPrice}) must be greater than existing bid of ${currentBid/100}`);
-            //     return true;
-            // }
+        //     console.error(`Ask price (${sellPrice}) must be greater than existing bid of ${currentBid/100}`);
+        //     return true;
+        // }
         this.limitText = "";
         return false;
     }
@@ -207,6 +219,10 @@ class OrderEnterWidget extends PolymerElement {
             this.disableBid = !this.disableBid;
         else if (type === 'ask')
             this.disableAsk = !this.disableAsk;
+    }
+
+    _getNondefault(def) {
+        return 100 - def;
     }
 }
 

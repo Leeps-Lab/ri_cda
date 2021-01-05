@@ -25,6 +25,9 @@ class SingleAssetTextInterface extends PolymerElement {
             settledCash: Number,
             availableCash: Number,
             timeRemaining: Number,
+            g: Number,
+            mLow: Number,
+            mHigh: Number,
             lowValue: Number,
             highValue: Number,
             buyOption: {
@@ -177,6 +180,9 @@ class SingleAssetTextInterface extends PolymerElement {
                     available-cash="{{availableCash}}"
                     buy-price="[[ bidPrice ]]"
                     sell-price="[[ askPrice ]]"
+                    default-prob="[[ g ]]"
+                    m-low="{{ mLow }}"
+                    m-high="{{ mHigh }}"
                     low-value="[[ lowValue ]]"
                     high-value="[[ highValue ]]"
                     buy-option="[[ buyOption ]]"
