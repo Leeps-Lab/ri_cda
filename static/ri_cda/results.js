@@ -4,13 +4,28 @@ import './public_info/public_info.js';
 import './info_precision/info_precision.js';
 import './bond_price/bond_price.js';
 import './polymer-elements/paper-button.js';
+import '/static/otree-redwood/src/redwood-channel/redwood-channel.js';
+import '/static/otree-redwood/src/otree-constants/otree-constants.js';
 
+
+// import '/static/otree_markets/order_list.js';
+// import '/static/otree_markets/trade_list.js';
+import '/static/otree_markets/simple_modal.js';
+// import '/static/otree_markets/event_log.js';
+
+import './order_enter_widget.js';
+
+import './otree_markets_components/event_log.js';
+import './otree_markets_components/order_list.js';
+import './otree_markets_components/trade_list.js';
 
 class Results extends PolymerElement {
     static get properties() {
         return {
             availableAssets: Number,
             availableCash: Number,
+            settledCash: Number,
+            settledAssets: Number,
             g: Number,
             k: Number,
             m: Number,
@@ -31,7 +46,7 @@ class Results extends PolymerElement {
             },
             payoff: {
                 type: Number,
-                computed: '_getpayoff(availableAssets, bondPayment, availableCash, cost)',
+                computed: '_getpayoff(settledAssets, bondPayment, settledCash, cost)',
                 notify: true,
                 reflectToAttribute: true,
             },
@@ -67,9 +82,9 @@ class Results extends PolymerElement {
                 </div>
                 <div>
                 <h4>Your Allocation</h4>
-                <div>Net Cash: [[_formatCash(availableCash)]]<br/> Bonds held: [[availableAssets]]</div>
+                <div>Net Cash: [[_formatCash(settledCash)]]<br/> Bonds held: [[settledAssets]]</div>
                 <div> Payoff = Net Cash + Bond Payment * Number of Held Bonds - Information Cost </div>
-                <div > [[payoff]] = [[_formatCash(availableCash)]] + [[bondPayment]] * [[availableAssets]] - [[cost]] </div>
+                <div > [[payoff]] = [[_formatCash(settledCash)]] + [[bondPayment]] * [[settledAssets]] - [[cost]] </div>
                 <paper-button class="btn" on-click="next">Continue</paper-button>
             </div>
         `;
@@ -99,8 +114,8 @@ class Results extends PolymerElement {
         return 'did not default.'
     }
 
-    _getpayoff(availableAssets, bondPayment, availableCash, cost) {
-        return parseFloat(((availableAssets * bondPayment) + this._formatCash(availableCash) - cost).toFixed(2));
+    _getpayoff(settledAssets, bondPayment, settledCash, cost) {
+        return parseFloat(((settledAssets * bondPayment) + this._formatCash(settledCash) - cost).toFixed(2));
     }
 
     next() {
