@@ -150,4 +150,4 @@ class payment_page(Page):
             'total_payoff': round((payment_payoff - participation_fee_total)*.5,2)
         }
 
-page_sequence = [block_page, Start, Market, Results,  payment_page]
+page_sequence = [block_page, Start, Market, Results, EndBlock, payment_page]
