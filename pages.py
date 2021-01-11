@@ -84,7 +84,7 @@ class Results(Page):
             'k': self.subsession.get_k(),
             'm': self.subsession.get_m(),
             'default': self.subsession.get_default(),
-            'available_assets': self.player.available_assets.get('A'),
+            'settled_assets': self.player.settled_assets.get('A'),
             'y': self.subsession.get_y(),
             # 'q': self.subsession.get_q(),
             # 'expected_value': self.subsession.get_expected_value(),
@@ -94,27 +94,39 @@ class EndBlock(Page):
 
     def is_displayed(self):
         try:
-            if self.subsession.get_block_total() == 1:
-                return self.subsession.get_round() % self.subsession.get_block_total() == 0
-            else:
-                return self.subsession.get_round() % self.subsession.get_block_total() == 0
+            return self.subsession.get_round() % self.subsession.get_block_total() == 0
         except:
             return False
 
     def vars_for_template(self):
-        if self.subsession.get_block_total() == 1:
+        i = 0
+        total_round_payoff = 0
+        while (i < self.subsession.get_block_total()):
+            total_round_payoff += round((self.player.in_round(self.subsession.get_round() - i ).round_payoff), 2)
+            i += 1
             block_num = int(self.subsession.get_round()/self.subsession.get_block_total())
-        else:
-            block_num = int(self.subsession.get_round()/self.subsession.get_block_total())
+        participation = 0
+        i = 0
+        while (i < self.subsession.get_block_total()):
+            participation += self.subsession.in_round(self.subsession.get_round() - i ).get_participation()
+            i += 1
         return {
+            'participation': participation,
             'block_num': block_num,
             'round_payoff': self.player.round_payoff,
+            'total_round_payoff': total_round_payoff,
+            'total_payoff': round(total_round_payoff - participation, 2),
+            'round_5': round((self.player.in_round(self.subsession.get_round()).round_payoff), 2),
+            'round_4': round((self.player.in_round(self.subsession.get_round() - 1).round_payoff), 2),
+            'round_3': round((self.player.in_round(self.subsession.get_round() - 2).round_payoff), 2),
+            'round_2': round((self.player.in_round(self.subsession.get_round() - 3).round_payoff), 2),
+            'round_1': round((self.player.in_round(self.subsession.get_round() - 4).round_payoff), 2),
         }
 class payment_page(Page):
 
     def is_displayed(self):
         try:
-            return self.subsession.get_round() == 2
+            return self.subsession.get_round() == 25
         except:
             return False
 
@@ -138,4 +150,4 @@ class payment_page(Page):
             'total_payoff': round((payment_payoff - participation_fee_total)*.5,2)
         }
 
-page_sequence = [block_page, Start, Market, Results]
+page_sequence = [block_page, Start, Market, Results, EndBlock, payment_page]
