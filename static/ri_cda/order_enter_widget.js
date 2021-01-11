@@ -28,7 +28,7 @@ class OrderEnterWidget extends PolymerElement {
             displayFormat: {
                 type: Object,
                 value: function () {
-                    return cash => `$${parseFloat((cash / 100).toFixed(1))}`;
+                    return cash => `${parseFloat((cash / 100).toFixed(1))}`;
                 },
             },
             disableBid: {
@@ -108,7 +108,7 @@ class OrderEnterWidget extends PolymerElement {
                     color: red;
                 }
             </style>
-            <div id="bonds">Net Credits: [[displayFormat(settledCash) ]]<br/>Bonds held: [[ settledAssets ]]</div>
+            <div id="bonds">Net Cash: [[displayFormat(settledCash) ]]<br/>Bonds held: [[ settledAssets ]]</div>
                 <div id="order-input">
 
                     <buysell-slider
