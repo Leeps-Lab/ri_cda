@@ -27,6 +27,7 @@ class block_page(Page):
         }
 
 class Start(Page):
+    timeout_seconds = 60
     form_model = 'player'
     form_fields = ['width', 'cost', 'm_low', 'm_high', 'low_val', 'high_val']
 
