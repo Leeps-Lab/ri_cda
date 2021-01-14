@@ -126,6 +126,7 @@ class Results extends PolymerElement {
                 this: this,
                 value: { // values to dispatch to oTree
                     'payoff': this.payoff,
+                    'settledAssets' : this.settledAssets,
                 },
                 eventName: 'getPolymerData'
               }

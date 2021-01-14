@@ -72,7 +72,7 @@ class Market(BaseMarketPage):
 #     wait_for_all_groups = True
 class Results(Page):
     form_model = 'player'
-    form_fields = ['round_payoff']
+    form_fields = ['round_payoff', 'bonds_held']
 
     def is_displayed(self):
         return self.round_number <= self.subsession.config.num_rounds

@@ -114,6 +114,7 @@ class Player(markets_models.Player):
     low_val = models.FloatField(initial=0, blank=True)
     high_val = models.FloatField(initial=100, blank=True)
     round_payoff = models.FloatField(initial=100, blank=True)
+    bonds_held = models.IntegerField(initial = 0, blank = True)
 
     # allow negative settled
     def check_available(self, is_bid: bool, price: int, volume: int, asset_name: str):
@@ -129,6 +130,6 @@ class Player(markets_models.Player):
     def custom_export(self, players):
         # header row
         print(players.values_list())
-        yield ['width', 'cost', 'm_low', 'm_high', 'low_val', 'high_val', 'bid_price', 'bought', 'sold', 'round_payoff']
+        yield ['width', 'cost', 'm_low', 'm_high', 'low_val', 'high_val', 'bid_price', 'bought', 'sold', 'round_payoff', 'bonds_held']
         for p in players:
             yield [p.width, p.bid_price, p.ask_price, p.bought, p.sold, p.round_payoff]
