@@ -9,7 +9,7 @@ import random
 class Constants(BaseConstants):
     name_in_url = 'ri_cda'
     players_per_group = None
-    num_rounds = 2
+    num_rounds = 99
 
     # the columns of the config CSV and their types
     # this dict is used by ConfigManager
@@ -21,7 +21,6 @@ class Constants(BaseConstants):
         'allow_short': bool,
         'g': int,
         'k': float,
-        'y': int,
         'block_total': int,
         'participation_fee': float,
 
@@ -71,10 +70,10 @@ class Subsession(markets_models.Subsession):
 
     #Need for default
     def get_y(self):
-        if self.y is None:
+        if not self.y:
             self.y = int(random.uniform(0, 100))
             self.save()
-        return self.config.y
+        return self.y
 
     def get_block_total(self):
         return self.config.block_total
