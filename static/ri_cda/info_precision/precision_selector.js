@@ -110,11 +110,10 @@ class PrecisionSelector extends PolymerElement {
         const point = this.graphObj.series[0].data[this.precision - 1];
         point.select();
         this.graphObj.tooltip.refresh(point);
-        this.cost = point.y;
-        if(point.y < .01)
+        if(point.y < .01 && point.x < this.scale)
           this.cost = .01;
         else
-          this.cost = Math.round(point.y * 100)/100;
+          this.cost = Math.round(point.y * this.scale)/this.scale;
     }
 
     _initHighchart() {
