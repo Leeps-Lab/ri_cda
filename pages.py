@@ -116,17 +116,16 @@ class EndBlock(Page):
             'round_payoff': self.player.round_payoff,
             'total_round_payoff': total_round_payoff,
             'total_payoff': round(total_round_payoff - participation, 2),
-            'round_5': round((self.player.in_round(self.subsession.get_round()).round_payoff), 2),
-            'round_4': round((self.player.in_round(self.subsession.get_round() - 1).round_payoff), 2),
-            'round_3': round((self.player.in_round(self.subsession.get_round() - 2).round_payoff), 2),
-            'round_2': round((self.player.in_round(self.subsession.get_round() - 3).round_payoff), 2),
-            'round_1': round((self.player.in_round(self.subsession.get_round() - 4).round_payoff), 2),
+            'round_4': round((self.player.in_round(self.subsession.get_round()).round_payoff), 2),
+            'round_3': round((self.player.in_round(self.subsession.get_round() - 1).round_payoff), 2),
+            'round_2': round((self.player.in_round(self.subsession.get_round() - 2).round_payoff), 2),
+            'round_1': round((self.player.in_round(self.subsession.get_round() - 3).round_payoff), 2),
         }
 class payment_page(Page):
 
     def is_displayed(self):
         try:
-            return self.subsession.get_round() == 25
+            return self.subsession.get_round() == 24
         except:
             return False
 
@@ -147,7 +146,7 @@ class payment_page(Page):
         ##function to sum total participation fees
         return {
             'player_id': self.player.id_in_group,
-            'total_payoff': round((payment_payoff - participation_fee_total)*.5,2)
+            'total_payoff': round((payment_payoff - participation_fee_total)*.25,2)
         }
 
-page_sequence = [block_page, Start, Market, Results, EndBlock, payment_page]
+page_sequence = [Start, Market, Results,  payment_page]
