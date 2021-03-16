@@ -23,7 +23,8 @@ class Constants(BaseConstants):
         'k': float,
         'block_total': int,
         'participation_fee': float,
-
+        'm': int,
+        'y': int,
     }
 
 
@@ -32,7 +33,6 @@ class Subsession(markets_models.Subsession):
     k = models.FloatField()
     m = models.IntegerField()
     y = models.IntegerField()
-    q = models.IntegerField()
     # expected_value = models.FloatField()
     default = models.BooleanField()
     period_length = models.IntegerField()
@@ -57,23 +57,23 @@ class Subsession(markets_models.Subsession):
         return self.config.g
 
     def get_k(self):
-        if not self.k:
-            self.k = self.config.k
+        if self.k is None:
+            self.k = int(random.uniform(0, 100))
             self.save()
-        return self.k
+        return self.config.k
 
     def get_m(self):
         if not self.m:
             self.m = int(random.uniform(0, 100))
             self.save()
-        return self.m
+        return self.config.m
 
     #Need for default
     def get_y(self):
         if not self.y:
             self.y = int(random.uniform(0, 100))
             self.save()
-        return self.y
+        return self.config.y
 
     def get_block_total(self):
         return self.config.block_total

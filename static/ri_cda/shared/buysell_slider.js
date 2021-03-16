@@ -27,7 +27,16 @@ class BuysellSlider extends PolymerElement {
             disableSelect: {
                 type: Boolean,
                 value: false,
-            }
+            },
+            disableprice: {
+                type: Boolean,
+                value: true,
+            },
+            hidden: {
+              type: Boolean,
+              value: true,
+            },
+
         }
     }
 
@@ -38,9 +47,8 @@ class BuysellSlider extends PolymerElement {
                 :host {
                     position: relative;
                 }
-                #price {
-                    --mark-color: var(--price-color);
-                    opacity: 0;
+                .price {
+                    --mark-color: #E11584;
                 }
                 #anim {
                     background-color: var(--price-color);
@@ -61,7 +69,7 @@ class BuysellSlider extends PolymerElement {
                 .markers {
                     position: relative;
                     display: flex;
-                    height: 16px;
+                    height: 30px;
                     margin: 0 24px 0 5px;
                 }
                 .high {
@@ -104,21 +112,19 @@ class BuysellSlider extends PolymerElement {
                 style$="left: [[ _getMark(lowValue) ]]%;"
             ></price-marker>
             <price-marker
-                id="price"
+                class="price"
                 value="[[ priceToShow ]]"
                 style$="left: [[ _getMark(priceToShow) ]]%;"
-                hidden="[[ hideBeforeSubmit ]]"
+                hidden="[[ hidden ]]"
             ></price-marker>
             </div>
-            <div class="markers">
-                <span id="anim" class$="[[ _showActualPrice(animatePrice, priceToShow, hideBeforeSubmit) ]]" hidden$="[[ _hidePrice(hideBeforeSubmit, animatePrice) ]]"></span> 
-            </div>
+
             <div class="sliderticks">
                 <template is="dom-repeat" items="[[ markers ]]">
                     <p>[[ item ]]</p>
                 </template>
             </div>
-            <div hidden$="[[ sellOption ]]">
+            <div hidden$="[[ sellOption ]]" >
                 <paper-single-range-slider
                     class="slider1"
                     slider-width="100%"

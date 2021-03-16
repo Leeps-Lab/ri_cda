@@ -1,5 +1,5 @@
 import { html, PolymerElement } from '/static/otree-redwood/node_modules/@polymer/polymer/polymer-element.js';
-
+import './shared/buysell_slider.js';
 import './public_info/public_info.js';
 import './info_precision/info_precision.js';
 import './bond_price/bond_price.js';
@@ -30,6 +30,42 @@ class Results extends PolymerElement {
             k: Number,
             m: Number,
             y: Number,
+            mLow: Number,
+            mHigh: Number,
+            lowValue: Number,
+            highValue: Number,
+            buyOption: {
+                type: Boolean,
+                value: true,
+            },
+            sellOption: {
+                type: Boolean,
+                value: true,
+            },
+            hidden: {
+                type: Boolean,
+                value: false,
+            },
+            disableSelect: {
+                type: Boolean,
+                value: true,
+            },
+            animatePrice: {
+                type: Boolean,
+                value: true,
+              },
+            hideBeforeSubmit: {
+                type: Boolean,
+                value: false,
+            },
+            buyPrice: {
+                type: Number,
+                value: 0,
+            },
+            sellPrice: {
+                type: Number,
+                value: 100,
+            },
             isdefault: {
                 type: Boolean,
                 computed: '_getisdefault(y,g)',
@@ -54,6 +90,16 @@ class Results extends PolymerElement {
                 type: String,
                 value: 'Continue',
             },
+            expectedValue: {
+              type: Number,
+              computed: '_expectedBondVal(m)',
+              notify: true,
+              reflectToAttribute: true,
+            },
+            step: {
+              type: Number,
+              value: 0,
+            },
         }
     }
 
@@ -73,8 +119,33 @@ class Results extends PolymerElement {
                     color: #00FF00;
                     background: none;
                 }
+                mark.exp-val {
+                    color: #E11584;
+                    background: none;
+                }
             </style>
-            <div id="allocation">
+            <div id= "slider" >
+            <buysell-slider
+                low-value="[[ lowValue ]]"
+                high-value="[[ highValue ]]"
+                buy-option="[[ buyOption ]]"
+                sell-option="[[ sellOption ]]"
+                buy-price="{{ buyPrice }}"
+                sell-price="{{ sellPrice }}"
+                price-to-show="[[ expectedValue ]]"
+                animate-price="[[ animatePrice ]]"
+                hide-before-submit="[[ hideBeforeSubmit ]]"
+                disable-select="[[ disableSelect ]]"
+                hidden= "[[hidden]]"
+            ></buysell-slider>            <div>
+            <h2>Actual m: [[ m ]]</h2>
+            <h3>Expected bond value:
+            <span class="non-def">[[ _getNondefault(g) ]]%</span> * 100 + <span class="def">[[ g ]]%</span>
+                * [[ m ]] = <mark class="exp-val">[[ expectedValue ]]</mark>
+            </h3>
+            </div>
+            <paper-button class="btn" on-click="next_step" hidden$="{{_disable(step)}}"> Next </paper-button>
+            <div id="allocation" hidden$="{{_hide(step)}}">
                 <div>
                     <h4> Your bonds <mark class$ = [[_getDefaultcolor(isdefault)]]> [[_getDefault()]] </mark><br/>
                     Actual held bond payment: [[ bondPayment ]]<br/>
@@ -85,7 +156,8 @@ class Results extends PolymerElement {
                 <div>Net Cash: [[_formatCash(settledCash)]]<br/> Bonds held: [[settledAssets]]</div>
                 <div> Payoff = Net Cash + Bond Payment * Number of Held Bonds - Information Cost </div>
                 <div > [[payoff]] = [[_formatCash(settledCash)]] + [[bondPayment]] * [[settledAssets]] - [[cost]] </div>
-                <paper-button class="btn" on-click="next">Continue</paper-button>
+                <paper-button class="btn" on-click="next" hidden$="{{_hide(step)}}" >Continue</paper-button>
+            </div>
             </div>
         `;
     }
@@ -96,9 +168,14 @@ class Results extends PolymerElement {
     _getisdefault(y,g) {
         return y < g;
     }
-
+    _expectedBondVal(m) {
+        return parseFloat((this._getNondefault(this.g) + this.g * m / 100).toFixed(2));
+    }
     _getBondPayment(m) {
         return this.isdefault ? m : 100; // 0 if match
+    }
+    _getNondefault(def) {
+        return 100 - def;
     }
     _getDefaultcolor(isdefault) {
         if (isdefault)
@@ -117,7 +194,15 @@ class Results extends PolymerElement {
     _getpayoff(settledAssets, bondPayment, settledCash, cost) {
         return parseFloat(((settledAssets * bondPayment) + this._formatCash(settledCash) - cost).toFixed(2));
     }
-
+    next_step() {
+        this.step = 1;
+    }
+    _disable(step) {
+      return this.step == 1;
+    }
+    _hide(step) {
+        return this.step != 1;
+    }
     next() {
         this.dispatchEvent(new CustomEvent('getPolymerData', {
             bubbles: true,

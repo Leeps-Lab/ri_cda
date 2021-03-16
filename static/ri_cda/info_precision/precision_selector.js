@@ -11,6 +11,12 @@ class PrecisionSelector extends PolymerElement {
                 notify: true,
                 reflectToAttribute: true,
             },
+            zeroprecision: {
+                type: Number,
+                value: 100,
+                notify: true,
+                reflectToAttribute: true,
+            },
             cost: {
                 type: Number,
                 value: 0,
@@ -70,7 +76,7 @@ class PrecisionSelector extends PolymerElement {
             <div class="container">
                 <figure class="highcharts-figure">
                 <div id="chart"></div>
-                <input type="range" min="1" max=[[ scale ]] step="1" value="{{ precision::input }}" disabled$="[[ disableSelect ]]" >
+                <input type="range" min="0" max=[[ scale ]] step ="20" value="{{ precision::input }}" disabled$="[[ disableSelect ]]" >
                 <div class="sliderticks">
                     <p>precise</p>
                     <p></p>
@@ -81,7 +87,7 @@ class PrecisionSelector extends PolymerElement {
                 </div>
                 </figure>
                 <div class="display">
-                    <h2>width: [[ precision ]]<br/>cost: [[ cost ]]</h2>
+                    <h2>width: [[ zeroprecision ]]<br/>cost: [[ cost_round ]]</h2>
                 </div>
             </div>`;
     }
@@ -98,7 +104,35 @@ class PrecisionSelector extends PolymerElement {
             // scale back to 0 ~ 1 for calculating costs (y-coordinates)
             let xs = parseFloat((x/100).toFixed(2));
             let val = parseFloat((-k * Math.log(xs)).toFixed(4));
-            data.push([x, val]);
+            if(x == 100 || x == 80 ||x == 60 || x == 40 || x == 20 || x == 1) {
+              data.push({
+                  x: x,
+                  y: val,
+                  marker: {
+                    enabled: true,
+                    radius: 8,
+                  },
+                  tooltip: {
+                      enabled: true,
+                      crosshairs: true,
+                      formatter: function() {
+                          return 'Width: ' + this.point.x + '<br/>Cost: ' + this.point.y;
+                      },
+                      valueSuffix: ' credits',
+                      style: {
+                          width: '500px',
+                          fontSize: '16px'
+                      }
+                  },
+
+              });
+            }
+            else {
+              data.push([x, val]);
+            }
+            if( x == 1) {
+              data.push([0,val]);
+            }
         }
         return data;
 
@@ -107,14 +141,25 @@ class PrecisionSelector extends PolymerElement {
     _updateSelected() {
         if (!this.graphObj)
             return;
-        const point = this.graphObj.series[0].data[this.precision - 1];
+        const point = this.graphObj.series[0].data[this.precision];
         point.select();
         this.graphObj.tooltip.refresh(point);
-        if(point.y < .01 && point.x < this.scale)
-          this.cost = .01;
+        this.cost = point.y;
+        //Change later
+        if(point.y < 1)
+          this.cost_round = 0;
         else
-          this.cost = Math.round(point.y * this.scale)/this.scale;
+          this.cost_round = Math.round(point.y * 100)/100;
+        if (this.precision == 0) {
+            this.zeroprecision = 1;
+            this.precision = 1;
+          }
+        else {
+          this.zeroprecision = this.precision;
+        }
+
     }
+
 
     _initHighchart() {
         this.graphObj = Highcharts.chart({
@@ -122,12 +167,15 @@ class PrecisionSelector extends PolymerElement {
                 renderTo: this.$.chart,
             marginLeft: 50
             // Fix visual bug
-
             },
             tooltip: {
+                enabled: true,
                 crosshairs: true,
                 formatter: function() {
-                    return 'Width: ' + this.point.x + '<br/>Cost: ' + this.point.y;
+                    if(this.point.x == 1 || this.point.x == 20 || this.point.x == 40 || this.point.x == 60 || this.point.x ==80 || this.point.x ==100) {
+                        return 'Width: ' + this.point.x + '<br/>Cost: ' + Math.round(this.point.y * 100)/100;
+                    }
+
                 },
                 valueSuffix: ' credits',
                 style: {
@@ -139,12 +187,14 @@ class PrecisionSelector extends PolymerElement {
                 text: '',
             },
             yAxis: {
+                min: 0,
+                max: 25,
                 title: {
                     text: 'Cost',
                     style: {
                         fontSize: '20px'
                     },
-                    margin: 30
+
                 }
             },
             xAxis: {

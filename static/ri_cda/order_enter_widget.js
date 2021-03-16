@@ -25,6 +25,10 @@ class OrderEnterWidget extends PolymerElement {
                 type: Number,
                 value: 100,
             },
+            hidden: {
+                type: Boolean,
+                value: true,
+            },
             displayFormat: {
                 type: Object,
                 value: function () {
@@ -112,6 +116,7 @@ class OrderEnterWidget extends PolymerElement {
                 <div id="order-input">
 
                     <buysell-slider
+                        hidden = "[[hidden]]"
                         low-value="[[ lowValue ]]"
                         high-value="[[ highValue ]]"
                         buy-option="[[ buyOption ]]"
