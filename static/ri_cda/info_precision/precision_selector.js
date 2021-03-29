@@ -146,7 +146,7 @@ class PrecisionSelector extends PolymerElement {
         this.graphObj.tooltip.refresh(point);
         this.cost = point.y;
         //Change later
-        if(point.y < 1)
+        if(point.y < .01)
           this.cost_round = 0;
         else
           this.cost_round = Math.round(point.y * 100)/100;
