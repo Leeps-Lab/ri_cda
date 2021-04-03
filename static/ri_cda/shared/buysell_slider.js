@@ -36,6 +36,10 @@ class BuysellSlider extends PolymerElement {
               type: Boolean,
               value: true,
             },
+            box: {
+              type: Boolean,
+              value: true,
+            },
 
         }
     }
@@ -162,6 +166,12 @@ class BuysellSlider extends PolymerElement {
                     value-max="{{ sellPrice::change }}"
                     disabled="[[ disableSelect ]]"
                 ></paper-range-slider>
+            </div>
+            <div hidden$="[[ box ]]">
+            <label for="buybox">Enter Bid:</label>
+            <input id="buyBox" type="number" min="0" max="{{ sellPrice::change }}" value= "{{ buyPrice::change }}" />
+            <label for="sellbox">Enter Ask:</label>
+            <input id="sellBox" type="number" min="{{ buyPrice::change }}" max="100" value= "{{ sellPrice::change }}" />
             </div>
         `;
     }

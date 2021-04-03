@@ -43,6 +43,10 @@ class OrderEnterWidget extends PolymerElement {
                 type: Boolean,
                 computed: "_disableAsk(settledAssets)",
             },
+            box: {
+              type: Boolean,
+              value: false,
+            },
             limitText: String,
         };
     }
@@ -123,6 +127,7 @@ class OrderEnterWidget extends PolymerElement {
                         sell-option="[[ sellOption ]]"
                         buy-price="{{ buyPrice }}"
                         sell-price="{{ sellPrice }}"
+                        box = "[[ box ]]"
                     ></buysell-slider>
                     <h4 class="limit-text">[[ limitText ]]</h4>
                     <div>
