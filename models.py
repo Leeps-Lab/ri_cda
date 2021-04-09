@@ -52,26 +52,26 @@ class Subsession(markets_models.Subsession):
 
     def get_g(self):
         if self.g is None:
-            self.g = int(random.uniform(0, 100))
+            self.g = self.config.g
             self.save()
         return self.config.g
 
     def get_k(self):
         if self.k is None:
-            self.k = int(random.uniform(0, 100))
+            self.k = self.config.k
             self.save()
         return self.config.k
 
     def get_m(self):
         if not self.m:
-            self.m = int(random.uniform(0, 100))
+            self.m = self.config.m
             self.save()
         return self.config.m
 
     #Need for default
     def get_y(self):
         if not self.y:
-            self.y = int(random.uniform(0, 100))
+            self.y = self.config.y
             self.save()
         return self.config.y
 

@@ -188,7 +188,7 @@ class PrecisionSelector extends PolymerElement {
             },
             yAxis: {
                 min: 0,
-                max: 25,
+                max: 15,
                 title: {
                     text: 'Cost',
                     style: {

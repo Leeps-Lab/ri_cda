@@ -7,9 +7,7 @@ import '/static/otree_markets/trader_state.js'
 // import '/static/otree_markets/trade_list.js';
 import '/static/otree_markets/simple_modal.js';
 // import '/static/otree_markets/event_log.js';
-
 import './order_enter_widget.js';
-
 import './otree_markets_components/event_log.js';
 import './otree_markets_components/order_list.js';
 import './otree_markets_components/trade_list.js';

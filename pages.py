@@ -71,7 +71,7 @@ class Market(BaseMarketPage):
         }
 # class Wait(WaitPage):
 #     wait_for_all_groups = True
-class Results(Page):
+class Results(BaseMarketPage):
     form_model = 'player'
     form_fields = ['round_payoff', 'bonds_held']
 
