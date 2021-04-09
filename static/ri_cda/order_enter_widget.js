@@ -145,10 +145,10 @@ class OrderEnterWidget extends PolymerElement {
                     <p class="buy-sell-text">
                         Select the price for which you'd like to <span class="buy val">buy</span> the bond by sliding
                     <img src="../../../../../static/ri_call_market/shared/buy_marker.png" alt="buy marker failed to load :(">
-                    <span class="buy val">(bid)</span>, and the price for which you'd like to <span class="sell val">sell</span>
+                    <span class="buy val">(bid)</span> or entering a number in the box labled Enter Bid, and the price for which you'd like to <span class="sell val">sell</span>
                     the bond by sliding
                     <img src="../../../../../static/ri_call_market/shared/sell_marker.png" alt="buy marker failed to load :(">
-                    <span class="sell val">(ask)</span>.</p>
+                    <span class="sell val">(ask)</span> or entering a number in the box labled Enter Ask.</p>
 
                     <p class="buy-sell-text">Click <span class="buy val">Enter bid</span> and <span class="sell val">Enter ask</span>
                     to submit the corresponding value.</p>

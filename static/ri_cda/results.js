@@ -196,17 +196,11 @@ class Results extends PolymerElement {
                   id="constants"
               ></otree-constants>
               <trader-state
-                  id="trader_state"
-                  bids="{{bids}}"
-                  asks="{{asks}}"
                   trades="{{trades}}"
                   settled-assets="{{settledAssets}}"
                   available-assets="{{availableAssets}}"
                   settled-cash="{{settledCash}}"
                   available-cash="{{availableCash}}"
-                  on-confirm-trade="_confirm_trade"
-                  on-confirm-cancel="_confirm_cancel"
-                  on-error="_handle_error"
               ></trader-state>
           <div class="container" id="main-container">
 
