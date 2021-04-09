@@ -116,6 +116,12 @@ class Results extends PolymerElement {
               type: Number,
               value: 0,
             },
+            cost_round: {
+              type: Number,
+              computed: '_roundCost(cost)',
+              notify: true,
+              reflectToAttribute: true,
+            },
       };
   }
 
@@ -239,13 +245,13 @@ class Results extends PolymerElement {
                 <div>
                     <h4> Your bonds <mark class$ = [[_getDefaultcolor(isdefault)]]> [[_getDefault()]] </mark><br/>
                     Actual held bond payment: [[ bondPayment ]]<br/>
-                    Your private info cost: [[ cost ]]</h4>
+                    Your private info cost: [[ cost_round ]]</h4>
                 </div>
                 <div>
                 <h4>Your Allocation</h4>
                 <div>Net Cash: [[_formatCash(settledCash)]]<br/> Bonds held: [[settledAssets]]</div>
                 <h3> Payoff = Net Cash + Bond Payment * Number of Held Bonds - Information Cost </h3>
-                <h3> [[payoff]] = [[_formatCash(settledCash)]] + [[bondPayment]] * [[settledAssets]] - [[cost]] </h3>
+                <h3> [[payoff]] = [[_formatCash(settledCash)]] + [[bondPayment]] * [[settledAssets]] - [[cost_round]] </h3>
                 <paper-button class="btn" on-click="next" hidden$="{{_hide(step)}}" >Continue</paper-button>
             </div>
             </div>
@@ -266,7 +272,9 @@ class Results extends PolymerElement {
           this.$.trades.setColor(i, type);
       }
   }
-
+  _roundCost(cost) {
+    return Math.round(cost * 100)/100;
+  }
   // triggered when this player enters an order
   _order_entered(event) {
       const order = event.detail;

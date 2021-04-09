@@ -4,12 +4,12 @@ from .models import Constants
 from .models import Group
 class block_page(Page):
     def is_displayed(self):
-    #    try:
-    #        if self.subsession.get_block_total() == 1:
-    #            return self.subsession.get_round() % self.subsession.get_block_total() == 0
-    #        else:
-    #            return self.subsession.get_round() % self.subsession.get_block_total() == 1
-    #    except:
+        try:
+            if self.subsession.get_block_total() == 1:
+                return self.subsession.get_round() % self.subsession.get_block_total() == 0
+            else:
+                return self.subsession.get_round() % self.subsession.get_block_total() == 1
+        except:
             return False
     def vars_for_template(self):
         if self.subsession.get_block_total() == 1:
