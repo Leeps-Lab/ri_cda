@@ -3,13 +3,13 @@ from otree.api import (
 )
 from otree_markets import models as markets_models
 from .configmanager import ConfigManager
-
+import csv
 import random
 
 class Constants(BaseConstants):
     name_in_url = 'ri_cda'
     players_per_group = None
-    num_rounds = 99
+    num_rounds = 5
 
     # the columns of the config CSV and their types
     # this dict is used by ConfigManager
@@ -46,6 +46,13 @@ class Subsession(markets_models.Subsession):
         return self.config.allow_short
 
     def creating_session(self):
+        counter = 0
+        filename = "ri_cda/configs/e.csv"
+        with open(filename, 'r') as csvfile:
+            e_list = [row for row in csv.reader(csvfile)]
+        for player in self.get_players():
+            player.e = float(e_list[self.round_number][counter])
+            counter = counter + 1
         if self.round_number > self.config.num_rounds:
             return
         return super().creating_session()
@@ -115,7 +122,7 @@ class Player(markets_models.Player):
     high_val = models.FloatField(initial=100, blank=True)
     round_payoff = models.FloatField(initial=100, blank=True)
     bonds_held = models.IntegerField(initial = 0, blank = True)
-
+    e = models.FloatField(initial = 0, blank = True)
     # allow negative settled
     def check_available(self, is_bid: bool, price: int, volume: int, asset_name: str):
         return True

@@ -21,6 +21,7 @@ class RICda extends PolymerElement {
                 notify: true,
                 reflectToAttribute: true,
             },
+            e: Number,
             g: Number,
             k: Number,
             m: Number,
@@ -83,6 +84,7 @@ class RICda extends PolymerElement {
                     g="[[ g ]]"
                     m="[[ m ]]"
                     q="[[ q ]]"
+                    e = "[[ e ]]"
                     buy-option="[[ buyOption ]]"
                     sell-option="[[ sellOption ]]"
                     precision="[[ precision ]]"

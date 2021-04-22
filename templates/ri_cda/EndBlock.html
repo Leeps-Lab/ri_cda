@@ -16,7 +16,7 @@ Block Results
 <p> Block Participation Fee: {{ participation }}
 <p> The payoff for this block is calculated as the sum of the payoff of each round subtracted by the participation fee of the block:
 </p>
-<p> Block Payoff = Round 1 Payoff + Round 2 Payoff + Round 3 Payoff + Round 4 Payoff   - Participation Fee</p>
-<p> {{total_payoff }} = {{round_1}} + {{ round_2 }} + {{round_3}} + {{round_4}}    - {{participation}}</p>
+<p> Block Payoff = ( Round 1 + Round 2 + Round 3 + Round 4 + Round 5 )  - Participation Fee</p>
+<p> {{total_payoff }} = {{round_1}} + {{ round_2 }} + {{round_3}} + {{round_4}} + {{round_5}} - {{participation}}</p>
     {% next_button %}
 {% endblock %}
