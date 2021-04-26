@@ -262,6 +262,9 @@ class SingleAssetTextInterface extends PolymerElement {
     // triggered when this player accepts someone else's order
     _order_accepted(event) {
         const order = event.detail;
+        //Get bids and asks
+        const bids = this.bids.filter(b => b.pcode === this.pcode);
+        const asks = this.asks.filter(a => a.pcode === this.pcode);
         if (order.pcode == this.pcode)
             return;
 
@@ -274,8 +277,18 @@ class SingleAssetTextInterface extends PolymerElement {
         this.$.modal.on_close_callback = (accepted) => {
             if (!accepted)
                 return;
-
             this.$.trader_state.accept_order(order);
+            //Cancel all asks
+            if(order.is_bid){
+              for(let i = 0; i < asks.length; i++) {
+                  this.$.trader_state.cancel_order(asks[i]);
+            }
+          }
+          else{
+            for(let i = 0; i < asks.length; i++) {
+                this.$.trader_state.cancel_order(asks[i]);
+              }
+          }
         };
         this.$.modal.show();
     }
