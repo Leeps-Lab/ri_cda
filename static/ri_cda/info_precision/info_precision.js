@@ -2,7 +2,7 @@ import { html, PolymerElement } from '/static/otree-redwood/node_modules/@polyme
 import './precision_selector.js';
 
 class InfoPrecision extends PolymerElement {
-   
+
     static get properties() {
         return {
             precision: {
@@ -28,6 +28,7 @@ class InfoPrecision extends PolymerElement {
          <div>
             <!-- <h3>Select the precision of your private information about m (slide and submit).</h3> -->
             <precision-selector
+                height = "[[ height ]]"
                 k="[[ k ]]"
                 precision="{{ precision }}"
                 cost="{{ cost }}"

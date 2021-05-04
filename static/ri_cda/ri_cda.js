@@ -25,6 +25,7 @@ class RICda extends PolymerElement {
             g: Number,
             k: Number,
             m: Number,
+            height: Number,
             precision: Number,
             cost: Number,
             mLow: Number,
@@ -73,6 +74,7 @@ class RICda extends PolymerElement {
             </div>
             <div hidden$="{{ _hideStep(step, 1) }}">
                 <info-precision
+                    height = "[[height]]"
                     k="[[ k ]]"
                     precision="{{ precision }}"
                     cost="{{ cost }}"

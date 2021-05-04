@@ -27,7 +27,7 @@ class block_page(Page):
         }
 
 class Start(Page):
-    timeout_seconds = 60
+    timeout_seconds = 180
     form_model = 'player'
     form_fields = ['width', 'cost', 'm_low', 'm_high', 'low_val', 'high_val']
 
@@ -41,6 +41,7 @@ class Start(Page):
             'k': self.subsession.get_k(),
             'm': self.subsession.get_m(),
             'e': self.player.e,
+            'height': self.subsession.get_height(),
             # 'y': self.subsession.get_y(),
             # 'q': self.subsession.get_q(),
             # 'expected_value': self.subsession.get_expected_value(),

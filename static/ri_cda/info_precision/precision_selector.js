@@ -11,6 +11,7 @@ class PrecisionSelector extends PolymerElement {
                 notify: true,
                 reflectToAttribute: true,
             },
+            height: Number,
             zeroprecision: {
                 type: Number,
                 value: 100,
@@ -76,7 +77,7 @@ class PrecisionSelector extends PolymerElement {
             <div class="container">
                 <figure class="highcharts-figure">
                 <div id="chart"></div>
-                <input type="range" min="0" max=[[ scale ]] step ="20" value="{{ precision::input }}" disabled$="[[ disableSelect ]]" >
+                <input id="precise" type="range" min="0" max=[[ scale ]] value="{{ precision::input }}" disabled$="[[ disableSelect ]]" >
                 <div class="sliderticks">
                     <p>precise</p>
                     <p></p>
@@ -96,7 +97,6 @@ class PrecisionSelector extends PolymerElement {
         super.ready();
         this._initHighchart();
     }
-
     _getCosts(k) {
         // Cost Function: -k ln w , where k (or kappa) > 0 is read from config
         let data = [];
@@ -104,7 +104,7 @@ class PrecisionSelector extends PolymerElement {
             // scale back to 0 ~ 1 for calculating costs (y-coordinates)
             let xs = parseFloat((x/100).toFixed(2));
             let val = parseFloat((-k * Math.log(xs)).toFixed(4));
-            if(x == 100 || x == 80 ||x == 60 || x == 40 || x == 20 || x == 1) {
+            if(x == 100 || x == 70 ||x == 50 || x == 30 || x == 10 || x == 1) {
               data.push({
                   x: x,
                   y: val,
@@ -145,11 +145,27 @@ class PrecisionSelector extends PolymerElement {
         point.select();
         this.graphObj.tooltip.refresh(point);
         this.cost = point.y;
-        //Change later
-        if(point.y < .01)
-          this.cost_round = 0;
-        else
-          this.cost_round = Math.round(point.y * 100)/100;
+        this.cost_round = Math.round(point.y * 100)/100;
+        // Snap to markers, maybe find a better solution later - but this works for now
+        if(this.precision >= 85) {
+            this.precision = 100;
+        }
+        else if(this.precision < 85 && this.precision >= 60) {
+            this.precision = 70;
+        }
+        else if(this.precision < 60 && this.precision >= 40) {
+            this.precision = 50;
+        }
+        else if(this.precision < 40 && this.precision >= 20) {
+            this.precision = 30;
+        }
+        else if(this.precision < 20 && this.precision >= 6) {
+            this.precision = 10;
+        }
+        else if(this.precision < 6) {
+            this.precision = 1;
+        }
+        //Edge case irrelevant now
         if (this.precision == 0) {
             this.zeroprecision = 1;
             this.precision = 1;
@@ -159,8 +175,6 @@ class PrecisionSelector extends PolymerElement {
         }
 
     }
-
-
     _initHighchart() {
         this.graphObj = Highcharts.chart({
             chart: {
@@ -172,7 +186,7 @@ class PrecisionSelector extends PolymerElement {
                 enabled: true,
                 crosshairs: true,
                 formatter: function() {
-                    if(this.point.x == 1 || this.point.x == 20 || this.point.x == 40 || this.point.x == 60 || this.point.x ==80 || this.point.x ==100) {
+                    if(this.point.x == 1 || this.point.x == 10 || this.point.x == 30 || this.point.x == 50 || this.point.x ==70 || this.point.x ==100) {
                         return 'Width: ' + this.point.x + '<br/>Cost: ' + Math.round(this.point.y * 100)/100;
                     }
 
@@ -188,7 +202,7 @@ class PrecisionSelector extends PolymerElement {
             },
             yAxis: {
                 min: 0,
-                max: 15,
+                max: this.height,
                 title: {
                     text: 'Cost',
                     style: {
@@ -200,6 +214,7 @@ class PrecisionSelector extends PolymerElement {
             xAxis: {
                 min: 0,
                 max: this.scale,
+                tickInterval: 10,
             },
             legend: {
                 layout: 'vertical',
@@ -209,7 +224,7 @@ class PrecisionSelector extends PolymerElement {
             plotOptions: {
                 line: { marker: { enabled: false } },
                 series: {
-                    allowPointSelect: true,
+                    allowPointSelect: false,
                     cursor: 'pointer',
                     events: {
                         click: function (event) {

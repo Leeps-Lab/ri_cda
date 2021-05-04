@@ -25,6 +25,7 @@ class Constants(BaseConstants):
         'participation_fee': float,
         'm': int,
         'y': int,
+        'height': int,
     }
 
 
@@ -33,6 +34,7 @@ class Subsession(markets_models.Subsession):
     k = models.FloatField()
     m = models.IntegerField()
     y = models.IntegerField()
+    height = models.IntegerField()
     # expected_value = models.FloatField()
     default = models.BooleanField()
     period_length = models.IntegerField()
@@ -62,7 +64,11 @@ class Subsession(markets_models.Subsession):
             self.g = self.config.g
             self.save()
         return self.config.g
-
+    def get_height(self):
+        if self.height is None:
+            self.height = self.config.height
+            self.save()
+        return self.config.height
     def get_k(self):
         if self.k is None:
             self.k = self.config.k
