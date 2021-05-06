@@ -9,7 +9,7 @@ import random
 class Constants(BaseConstants):
     name_in_url = 'ri_cda'
     players_per_group = None
-    num_rounds = 5
+    num_rounds = 25
 
     # the columns of the config CSV and their types
     # this dict is used by ConfigManager
@@ -49,7 +49,7 @@ class Subsession(markets_models.Subsession):
 
     def creating_session(self):
         counter = 0
-        filename = "ri_cda/configs/e.csv"
+        filename = "ri_cda/configs/" + self.session.config['e_file']
         with open(filename, 'r') as csvfile:
             e_list = [row for row in csv.reader(csvfile)]
         for player in self.get_players():

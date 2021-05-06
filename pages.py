@@ -6,7 +6,7 @@ class block_page(Page):
     def is_displayed(self):
         try:
             if self.subsession.get_block_total() == 1:
-                return self.subsession.get_round() % self.subsession.get_block_total() == 0
+                return False
             else:
                 return self.subsession.get_round() % self.subsession.get_block_total() == 1
         except:
@@ -27,7 +27,7 @@ class block_page(Page):
         }
 
 class Start(Page):
-    timeout_seconds = 180
+    timeout_seconds = 60
     form_model = 'player'
     form_fields = ['width', 'cost', 'm_low', 'm_high', 'low_val', 'high_val']
 
@@ -97,7 +97,10 @@ class EndBlock(Page):
 
     def is_displayed(self):
         try:
-            return self.subsession.get_round() % self.subsession.get_block_total() == 0
+            if self.subsession.get_block_total() == 1:
+                return False
+            else:
+                return self.subsession.get_round() % self.subsession.get_block_total() == 0
         except:
             return False
 
@@ -129,7 +132,7 @@ class payment_page(Page):
 
     def is_displayed(self):
         try:
-            return self.subsession.get_round() == 5
+            return self.subsession.get_round() == 25
         except:
             return False
 
@@ -150,7 +153,7 @@ class payment_page(Page):
         ##function to sum total participation fees
         return {
             'player_id': self.player.id_in_group,
-            'total_payoff': round((payment_payoff - participation_fee_total)*.09,2)
+            'total_payoff': round((payment_payoff - participation_fee_total)*.11,2)
         }
 
 page_sequence = [block_page, Start, Market, Results, EndBlock, payment_page]
