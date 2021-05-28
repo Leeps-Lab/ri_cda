@@ -9,7 +9,7 @@ import random
 class Constants(BaseConstants):
     name_in_url = 'ri_cda'
     players_per_group = None
-    num_rounds = 25
+    num_rounds = 24
 
     # the columns of the config CSV and their types
     # this dict is used by ConfigManager
