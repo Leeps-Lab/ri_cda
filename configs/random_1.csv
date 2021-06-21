@@ -1,5 +1,5 @@
 round,period_length,asset_endowment,cash_endowment,allow_short,g,k,block_total,participation_fee,m,y,height
-1,120,1,100,False,30,0.1,4,330.3,70,40,3
+1,999999,1,100,False,30,0.1,4,330.3,70,40,3
 2,120,1,100,False,30,0.1,4,0,46,84,3
 3,120,1,100,False,30,0.1,4,0,92,81,3
 4,120,1,100,False,30,0.1,4,0,82,58,3

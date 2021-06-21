@@ -224,9 +224,15 @@ class SingleAssetTextInterface extends PolymerElement {
                 this.$.widget.setLimitText(`Order rejected: bid price (${order.price/100}) must be less than existing ask of ${asks[0].price/100}`);
                 return;
             }
-            // replace previous bid, if exists
-            for(let i = 0; i < bids.length; i++) {
-                this.$.trader_state.cancel_order(bids[i]);
+
+            // replace previous bid, if exist
+            if(bids.length >= 1) {
+              for(let i = 0; i < bids.length; i++) {
+                  this.$.trader_state.cancel_order(bids[i]);
+              }
+            }
+            else if (bids.length == 0) {
+                this.$.trader_state.enter_order(order.price, order.volume, order.is_bid);
             }
             this.$.trader_state.enter_order(order.price, order.volume, order.is_bid);
             this.$.widget.disableSubmit('bid');
