@@ -207,7 +207,9 @@ class SingleAssetTextInterface extends PolymerElement {
             this.$.trades.setColor(i, type);
         }
     }
+    _order_done(){
 
+    }
     // triggered when this player enters an order
     _order_entered(event) {
         const order = event.detail;
@@ -224,18 +226,21 @@ class SingleAssetTextInterface extends PolymerElement {
                 this.$.widget.setLimitText(`Order rejected: bid price (${order.price/100}) must be less than existing ask of ${asks[0].price/100}`);
                 return;
             }
-
-            // replace previous bid, if exist
-            if(bids.length >= 1) {
+            // replace previous bid, if exists
+            for(let i = 0; i < bids.length; i++) {
+                this.$.trader_state.cancel_order(bids[i]);
+            }
+            if(!(bids.length > 0)) {
+              this.$.trader_state.enter_order(order.price, order.volume, order.is_bid);
+              this.$.widget.disableSubmit('bid');
+            }
+            else {
               for(let i = 0; i < bids.length; i++) {
                   this.$.trader_state.cancel_order(bids[i]);
               }
+              this.$.trader_state.enter_order(order.price, order.volume, order.is_bid);
+              this.$.widget.disableSubmit('bid');
             }
-            else if (bids.length == 0) {
-                this.$.trader_state.enter_order(order.price, order.volume, order.is_bid);
-            }
-            this.$.trader_state.enter_order(order.price, order.volume, order.is_bid);
-            this.$.widget.disableSubmit('bid');
         } else {
             // cannot ask lower than previous bid, if exists
             if (bids.length > 0 && bids[0].price >= order.price) {
@@ -246,8 +251,17 @@ class SingleAssetTextInterface extends PolymerElement {
             for(let i = 0; i < asks.length; i++) {
                 this.$.trader_state.cancel_order(asks[i]);
             }
-            this.$.trader_state.enter_order(order.price, order.volume, order.is_bid);
-            this.$.widget.disableSubmit('ask');
+            if(!(asks.length > 0)) {
+              this.$.trader_state.enter_order(order.price, order.volume, order.is_bid);
+              this.$.widget.disableSubmit('ask');
+            }
+            else {
+              for(let i = 0; i < asks.length; i++) {
+                  this.$.trader_state.cancel_order(asks[i]);
+                  this.$.trader_state.enter_order(order.price, order.volume, order.is_bid);
+                  this.$.widget.disableSubmit('ask');
+              }
+            }
         }
     }
 
