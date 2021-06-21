@@ -207,11 +207,52 @@ class SingleAssetTextInterface extends PolymerElement {
             this.$.trades.setColor(i, type);
         }
     }
-    _order_done(){
 
-    }
     // triggered when this player enters an order
     _order_entered(event) {
+      // This try catch is the dumbest thing that I have ever done, but it is 4:30 am and I really want to finish fixing the duplication bids and ask bug, and this works 
+        try {
+          const order = event.detail;
+          if (isNaN(order.price) || isNaN(order.volume)) {
+              this.$.widget.setLimitText('Invalid order entered');
+              return;
+          }
+          const bids = this.bids.filter(b => b.pcode === this.pcode);
+          const asks = this.asks.filter(a => a.pcode === this.pcode);
+
+          if (order.is_bid) {
+              if(order.price == bids[0].price) {
+                return;
+              }
+              // cannot bid higher than previous ask price, if exists
+              if (asks.length > 0 && asks[0].price <= order.price) {
+                  this.$.widget.setLimitText(`Order rejected: bid price (${order.price/100}) must be less than existing ask of ${asks[0].price/100}`);
+                  return;
+              }
+              // replace previous bid, if exists
+              for(let i = 0; i < bids.length; i++) {
+                  this.$.trader_state.cancel_order(bids[i]);
+              }
+              this.$.trader_state.enter_order(order.price, order.volume, order.is_bid);
+              this.$.widget.disableSubmit('bid');
+          } else {
+              if(order.price == asks[0].price) {
+                return;
+              }
+              // cannot ask lower than previous bid, if exists
+              if (bids.length > 0 && bids[0].price >= order.price) {
+                  this.$.widget.setLimitText(`Order rejected: ask price (${order.price/100}) must be greater than existing bid of ${bids[0].price/100}`);
+                  return;
+              }
+              // replace previous ask, if exists
+              for(let i = 0; i < asks.length; i++) {
+                  this.$.trader_state.cancel_order(asks[i]);
+              }
+              this.$.trader_state.enter_order(order.price, order.volume, order.is_bid);
+              this.$.widget.disableSubmit('ask');
+          }
+
+        } catch(error) {
         const order = event.detail;
         if (isNaN(order.price) || isNaN(order.volume)) {
             this.$.widget.setLimitText('Invalid order entered');
@@ -221,9 +262,6 @@ class SingleAssetTextInterface extends PolymerElement {
         const asks = this.asks.filter(a => a.pcode === this.pcode);
 
         if (order.is_bid) {
-          for(let i = 0; i < bids.length; i++) {
-              this.$.trader_state.cancel_order(bids[i]);
-          }
             // cannot bid higher than previous ask price, if exists
             if (asks.length > 0 && asks[0].price <= order.price) {
                 this.$.widget.setLimitText(`Order rejected: bid price (${order.price/100}) must be less than existing ask of ${asks[0].price/100}`);
@@ -233,21 +271,9 @@ class SingleAssetTextInterface extends PolymerElement {
             for(let i = 0; i < bids.length; i++) {
                 this.$.trader_state.cancel_order(bids[i]);
             }
-            if(!(bids.length > 0)) {
-              this.$.trader_state.enter_order(order.price, order.volume, order.is_bid);
-              this.$.widget.disableSubmit('bid');
-            }
-            else {
-              for(let i = 0; i < bids.length; i++) {
-                  this.$.trader_state.cancel_order(bids[i]);
-              }
-              this.$.trader_state.enter_order(order.price, order.volume, order.is_bid);
-              this.$.widget.disableSubmit('bid');
-            }
+            this.$.trader_state.enter_order(order.price, order.volume, order.is_bid);
+            this.$.widget.disableSubmit('bid');
         } else {
-          for(let i = 0; i < asks.length; i++) {
-              this.$.trader_state.cancel_order(asks[i]);
-          }
             // cannot ask lower than previous bid, if exists
             if (bids.length > 0 && bids[0].price >= order.price) {
                 this.$.widget.setLimitText(`Order rejected: ask price (${order.price/100}) must be greater than existing bid of ${bids[0].price/100}`);
@@ -257,18 +283,10 @@ class SingleAssetTextInterface extends PolymerElement {
             for(let i = 0; i < asks.length; i++) {
                 this.$.trader_state.cancel_order(asks[i]);
             }
-            if(!(asks.length > 0)) {
-              this.$.trader_state.enter_order(order.price, order.volume, order.is_bid);
-              this.$.widget.disableSubmit('ask');
-            }
-            else {
-              for(let i = 0; i < asks.length; i++) {
-                  this.$.trader_state.cancel_order(asks[i]);
-                  this.$.trader_state.enter_order(order.price, order.volume, order.is_bid);
-                  this.$.widget.disableSubmit('ask');
-              }
-            }
+            this.$.trader_state.enter_order(order.price, order.volume, order.is_bid);
+            this.$.widget.disableSubmit('ask');
         }
+      }
     }
 
     // triggered when this player cancels an order
