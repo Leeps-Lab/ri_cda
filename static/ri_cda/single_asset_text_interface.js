@@ -218,9 +218,6 @@ class SingleAssetTextInterface extends PolymerElement {
         const bids = this.bids.filter(b => b.pcode === this.pcode);
         const asks = this.asks.filter(a => a.pcode === this.pcode);
         if (order.is_bid) {
-            if(!(typeof bids[0] === "undefined") && order.price == bids[0].price ) {
-                return;
-            }
             // cannot bid higher than previous ask price, if exists
             if (asks.length > 0 && asks[0].price <= order.price) {
                 this.$.widget.setLimitText(`Order rejected: bid price (${order.price/100}) must be less than existing ask of ${asks[0].price/100}`);
@@ -233,9 +230,6 @@ class SingleAssetTextInterface extends PolymerElement {
             this.$.trader_state.enter_order(order.price, order.volume, order.is_bid);
             this.$.widget.disableSubmit('bid');
         } else {
-            if(!(typeof asks[0] === "undefined") && order.price == asks[0].price ) {
-                return;
-            }
             // cannot ask lower than previous bid, if exists
             if (bids.length > 0 && bids[0].price >= order.price) {
                 this.$.widget.setLimitText(`Order rejected: ask price (${order.price/100}) must be greater than existing bid of ${bids[0].price/100}`);

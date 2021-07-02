@@ -193,7 +193,7 @@ class OrderEnterWidget extends PolymerElement {
 
     _disableBid(settledAssets) {
         // prevents holding more than 2 bonds
-        if (settledAssets >= 2) {
+        if (settledAssets === 2) {
             this.limitText = "Cannot submit bid: holding 2 bonds";
             return true;
         }
@@ -207,7 +207,7 @@ class OrderEnterWidget extends PolymerElement {
 
     _disableAsk(settledAssets) {
         // prevents short selling
-        if (settledAssets <= 0) {
+        if (settledAssets === 0) {
             this.limitText = "Cannot submit ask: holding 0 bonds";
             return true;
         }
