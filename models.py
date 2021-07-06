@@ -2,9 +2,11 @@ from otree.api import (
     models, BaseConstants
 )
 from otree_markets import models as markets_models
+from otree_markets.exchange.base import Order
 from .configmanager import ConfigManager
 import csv
 import random
+import itertools
 
 class Constants(BaseConstants):
     name_in_url = 'ri_cda'
@@ -119,7 +121,65 @@ class Group(markets_models.Group):
         self.subsession.period_length = None
         self.subsession.save()
 
+    def confirm_enter(self, order):
+        player = self.get_player(order.pcode)
+        player.refresh_from_db()
+        exchange = self.exchanges.get()
+
+        if order.is_bid:
+            if player.current_bid:
+                exchange.cancel_order(player.current_bid.id)
+            player.current_bid = order
+            player.save()
+        else:
+            if player.current_ask:
+                exchange.cancel_order(player.current_ask.id)
+            player.current_ask = order
+            player.save()
+
+        super().confirm_enter(order)
+
+    def confirm_trade(self, trade):
+        exchange = self.exchanges.get()
+        for order in itertools.chain(trade.making_orders.all(), [trade.taking_order]):
+            player = self.get_player(order.pcode)
+            player.refresh_from_db()
+
+            # if the order from this trade is the current order for that player, update their current order to None.
+            # if the order from this trade is NOT the current order for that player, cancel it.
+            # the exception to this is if the price on the trade order and current order are the same, we assume the current
+            # order is a partially completed order from this trade and don't cancel it
+            if order.is_bid and player.current_bid:
+                if order.id == player.current_bid.id:
+                    player.current_bid = None
+                    player.save()
+                elif order.price != player.current_bid.price:
+                    exchange.cancel_order(player.current_bid.id)
+
+            if not order.is_bid and player.current_ask:
+                if order.id == player.current_ask.id:
+                    player.current_ask = None
+                    player.save()
+                elif order.price != player.current_ask.price:
+                    exchange.cancel_order(player.current_ask.id)
+
+        super().confirm_trade(trade)
+    
+    def confirm_cancel(self, order):
+        player = self.get_player(order.pcode)
+        player.refresh_from_db()
+        if order.is_bid:
+            player.current_bid = None
+        else:
+            player.current_ask = None
+        player.save()
+
+        super().confirm_cancel(order)
+
 class Player(markets_models.Player):
+    current_bid = models.ForeignKey(Order, null=True, on_delete=models.CASCADE, related_name="+")
+    current_ask = models.ForeignKey(Order, null=True, on_delete=models.CASCADE, related_name="+")
+
     width = models.IntegerField(initial=100, blank=True)
     cost = models.FloatField(initial=0, blank=True)
     m_low = models.FloatField(initial=0, blank=True)
