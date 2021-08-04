@@ -160,27 +160,49 @@ class OrderEnterWidget extends PolymerElement {
 
 
     _enter_bid() {
-        this.disableSubmit('bid');
-        const price = this.buyPrice; // must be whole numbers, breaks with decimals
-        const order = {
-            price: parseInt(price * 100),
-            volume: 1,
-            is_bid: true,
+        this.last_order_entry = this.last_order_entry || 0;
+
+        const now = performance.now();
+        // throttle rate in ms
+        // this value is the minimum amount of time between order entries
+        const throttle_rate = 1000;
+        const updateOrder = () => {
+            this.disableSubmit('bid');
+            const price = this.buyPrice; // must be whole numbers, breaks with decimals
+            const order = {
+                price: parseInt(price * 100),
+                volume: 1,
+                is_bid: true,
+            }
+            this.limitText = "";
+            this.dispatchEvent(new CustomEvent('order-entered', { detail: order }));
+            this.last_order_entry = now;
         }
-        this.limitText = "";
-        this.dispatchEvent(new CustomEvent('order-entered', { detail: order }));
+        clearTimeout(this.order_enter_timeout);
+        this.order_enter_timeout = setTimeout(updateOrder, this.last_order_entry + throttle_rate - now);
     }
 
     _enter_ask() {
-        this.disableSubmit('ask');
-        const price = this.sellPrice;
-        const order = {
-            price: parseInt(price * 100),
-            volume: 1,
-            is_bid: false,
+        this.last_order_entry = this.last_order_entry || 0;
+
+        const now = performance.now();
+        // throttle rate in ms
+        // this value is the minimum amount of time between order entries
+        const throttle_rate = 1000;
+        const updateOrder = () => {
+            this.disableSubmit('ask');
+            const price = this.sellPrice;
+            const order = {
+                price: parseInt(price * 100),
+                volume: 1,
+                is_bid: false,
+            }
+            this.limitText = "";
+            this.dispatchEvent(new CustomEvent('order-entered', { detail: order }));
+            this.last_order_entry = now;
         }
-        this.limitText = "";
-        this.dispatchEvent(new CustomEvent('order-entered', { detail: order }));
+        clearTimeout(this.order_enter_timeout);
+        this.order_enter_timeout = setTimeout(updateOrder, this.last_order_entry + throttle_rate - now);
     }
 
     _hideOption(buyOption, sellOption) {
